@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up - GoodMoodFood</title>
+  <style>
+    /* Global Styles */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+
+    /* Header */
+    header {
+      background-color: #000;
+      color: #fff;
+      padding: 20px 0;
+      text-align: center;
+    }
+
+    header .logo h1 {
+      font-size: 2.5rem;
+    }
+
+    nav ul {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    nav ul li {
+      margin: 0 15px;
+    }
+
+    nav ul li a {
+      text-decoration: none;
+      color: #fff;
+      font-size: 1.2rem;
+    }
+
+    nav ul li a:hover {
+      color: #ff6f61;
+    }
+
+    /* Main Sign Up Form */
+    .signup-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 80vh;
+      padding: 20px;
+    }
+
+    .signup-form {
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .signup-form h2 {
+      font-size: 2rem;
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .signup-form label {
+      font-size: 1.1rem;
+      color: #555;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    .signup-form input {
+      width: 100%;
+      padding: 10px;
+      font-size: 1rem;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      outline: none;
+    }
+
+    .signup-form input[type="submit"] {
+      background-color: #ff6f61;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      font-size: 1.1rem;
+    }
+
+    .signup-form input[type="submit"]:hover {
+      background-color: #ff4f3d;
+    }
+
+    .signup-form .alt-option {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .signup-form .alt-option a {
+      color: #ff6f61;
+      text-decoration: none;
+    }
+
+    .signup-form .alt-option a:hover {
+      text-decoration: underline;
+    }
+
+    /* Footer */
+    footer {
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      padding: 10px 0;
+      position: sticky;
+      width: 100%;
+      bottom: 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <h1>GoodMoodFood</h1>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about-us.html">About Us</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="login.html">Login</a></li>
+        <li><a href="signup.html">Sign Up</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Sign Up Form -->
+  <div class="signup-container">
+    <div class="signup-form">
+      <h2>Create Your Account</h2>
+      <form action="/signup" method="POST">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" placeholder="Enter your email" required>
+
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Create a password" required>
+
+        <label for="confirm-password">Confirm Password</label>
+        <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm your password" required>
+
+        <input type="submit" value="Sign Up">
+      </form>
+
+      <div class="alt-option">
+        <p>Already have an account? <a href="login.html">Log In</a></p>
+      </div>
+    </div
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2024 GoodMoodFood. All rights reserved.</p>
+  </footer>
+</body>
+</html>
