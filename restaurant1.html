@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restaurant - GoodMoodFood</title>
+  <style>
+    /* Global Styles */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #fafafa;
+    }
+
+    /* Header */
+    header {
+      background-color: #ff6f61;
+      color: white;
+      padding: 20px 0;
+      text-align: center;
+    }
+
+    header .logo h1 {
+      font-size: 2.5rem;
+      margin: 0;
+    }
+
+    nav ul {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    nav ul li {
+      margin: 0 15px;
+    }
+
+    nav ul li a {
+      text-decoration: none;
+      color: white;
+      font-size: 1.2rem;
+    }
+
+    nav ul li a:hover {
+      color: #fff5f0;
+    }
+
+    /* Restaurant Details */
+    .restaurant-details {
+      display: flex;
+      justify-content: space-between;
+      margin: 20px;
+      padding: 20px;
+      background-color: white;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+
+    .restaurant-details .left {
+      width: 60%;
+    }
+
+    .restaurant-details .right {
+      width: 35%;
+      text-align: center;
+    }
+
+    .restaurant-details img {
+      width: 100%;
+      border-radius: 8px;
+    }
+
+    .restaurant-name h2 {
+      font-size: 2rem;
+      margin: 10px 0;
+    }
+
+    .restaurant-rating {
+      color: #ffcc00;
+      font-size: 1.2rem;
+    }
+
+    .restaurant-description {
+      margin: 15px 0;
+      font-size: 1rem;
+      color: #555;
+    }
+
+    /* Menu Section */
+    .menu-section {
+      margin: 20px;
+      padding: 20px;
+      background-color: white;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+
+    .menu-section h3 {
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .menu-item {
+      background-color: white;
+      border-radius: 8px;
+      padding: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .menu-item img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .menu-item h4 {
+      font-size: 1.4rem;
+      margin: 10px 0;
+    }
+
+    .menu-item p {
+      color: #555;
+      font-size: 1rem;
+    }
+
+    .menu-item .price {
+      font-size: 1.2rem;
+      color: #ff6f61;
+      margin-top: 10px;
+    }
+
+    /* Footer */
+    footer {
+      background-color: #333;
+      color: white;
+      text-align: center;
+      padding: 10px 0;
+      position: sticky;
+      bottom: 0;
+      width: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header Section -->
+  <header>
+    <div class="logo">
+      <h1>GoodMoodFood</h1>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="Home.html">Home</a></li>
+        <li><a href="AboutUs.html">About Us</a></li>
+        <li><a href="Contact.html">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Restaurant Details Section -->
+  <section class="restaurant-details">
+    <div class="left">
+      <img src="restaurant-image.jpg" alt="Restaurant Image">
+    </div>
+    <div class="right">
+      <div class="restaurant-name">
+        <h2>Pizza Palace</h2>
+        <div class="restaurant-rating">
+          ★★★★☆ (4.5)
+        </div>
+      </div>
+      <div class="restaurant-description">
+        <p>Welcome to Pizza Palace, where we serve the finest pizzas made with fresh ingredients. Come and enjoy a meal with friends and family in a cozy atmosphere!</p>
+      </div>
+      <button style="background-color: #ff6f61; color: white; padding: 10px 20px; border-radius: 5px;">Order Now</button>
+    </div>
+  </section>
+
+  <!-- Menu Section -->
+  <section class="menu-section">
+    <h3>Our Menu</h3>
+    <div class="menu-grid">
+      <div class="menu-item">
+        <img src="pizza1.jpg" alt="Pizza Margherita">
+        <h4>Pizza Margherita</h4>
+        <p>Classic pizza with mozzarella, tomato, and basil.</p>
+        <div class="price">$12.99</div>
+      </div>
+      <div class="menu-item">
+        <img src="pizza2.jpg" alt="Pepperoni Pizza">
+        <h4>Pepperoni Pizza</h4>
+        <p>Delicious pizza with spicy pepperoni slices.</p>
+        <div class="price">$14.99</div>
+      </div>
+      <div class="menu-item">
+        <img src="pizza3.jpg" alt="Vegetarian Pizza">
+        <h4>Vegetarian Pizza</h4>
+        <p>A healthy pizza with fresh veggies.</p>
+        <div class="price">$13.99</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer Section -->
+  <footer>
+    <p>&copy; 2024 GoodMoodFood. All rights reserved.</p>
+    <ul class="social-links">
+      <li><a href="#">Facebook</a></li>
+      <li><a href="#">Twitter</a></li>
+      <li><a href="#">Instagram</a></li>
+    </ul>
+  </footer>
+</body>
+</html>
