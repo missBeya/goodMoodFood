@@ -13,17 +13,12 @@
       background-color: #fafafa;
     }
 
-    /* Header */
+    /* Header (Black Navigation Bar) */
     header {
-      background-color: #ff6f61;
+      background-color: black;
       color: white;
-      padding: 20px 0;
+      padding: 10px 0;
       text-align: center;
-    }
-
-    header .logo h1 {
-      font-size: 2.5rem;
-      margin: 0;
     }
 
     nav ul {
@@ -44,10 +39,10 @@
     }
 
     nav ul li a:hover {
-      color: #fff5f0;
+      color: #ff6f61;
     }
 
-    /* Restaurant Details */
+    /* Restaurant Details Section */
     .restaurant-details {
       display: flex;
       justify-content: space-between;
@@ -88,20 +83,41 @@
       color: #555;
     }
 
-    /* Menu Section */
-    .menu-section {
+    /* Information Tabs */
+    .info-tabs {
+      display: flex;
+      justify-content: center;
       margin: 20px;
+    }
+
+    .info-tabs div {
+      padding: 15px;
+      cursor: pointer;
+      background-color: #ff6f61;
+      color: white;
+      border-radius: 8px;
+      margin-right: 10px;
+      font-size: 1.1rem;
+    }
+
+    .info-tabs div:hover {
+      background-color: #ff4f3d;
+    }
+
+    .tab-content {
+      display: none;
       padding: 20px;
       background-color: white;
+      margin: 20px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       border-radius: 8px;
     }
 
-    .menu-section h3 {
-      font-size: 1.8rem;
-      margin-bottom: 20px;
+    .tab-content.active {
+      display: block;
     }
 
+    /* Menu Section */
     .menu-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -149,20 +165,17 @@
       bottom: 0;
       width: 100%;
     }
+
   </style>
 </head>
 
 <body>
-  <!-- Header Section -->
+  <!-- Header Section (Black Bar with Home and Login) -->
   <header>
-    <div class="logo">
-      <h1>GoodMoodFood</h1>
-    </div>
     <nav>
       <ul>
         <li><a href="Home.html">Home</a></li>
-        <li><a href="AboutUs.html">About Us</a></li>
-        <li><a href="Contact.html">Contact</a></li>
+        <li><a href="SignIn.html">Sign In / Login</a></li>
       </ul>
     </nav>
   </header>
@@ -186,8 +199,22 @@
     </div>
   </section>
 
-  <!-- Menu Section -->
-  <section class="menu-section">
+  <!-- Information Tabs -->
+  <div class="info-tabs">
+    <div id="tab-info" onclick="toggleTab('info')">Restaurant Info</div>
+    <div id="tab-menu" onclick="toggleTab('menu')">Menu</div>
+    <div id="tab-reviews" onclick="toggleTab('reviews')">Reviews</div>
+  </div>
+
+  <!-- Tab Contents -->
+  <div id="info" class="tab-content">
+    <h3>Restaurant Information</h3>
+    <p><strong>Address:</strong> 123 Pizza St., Food City, Country</p>
+    <p><strong>Delivery Minimum:</strong> $15</p>
+    <p><strong>Estimated Delivery Time:</strong> 30-45 minutes</p>
+  </div>
+
+  <div id="menu" class="tab-content">
     <h3>Our Menu</h3>
     <div class="menu-grid">
       <div class="menu-item">
@@ -209,7 +236,14 @@
         <div class="price">$13.99</div>
       </div>
     </div>
-  </section>
+  </div>
+
+  <div id="reviews" class="tab-content">
+    <h3>Customer Reviews</h3>
+    <p>"The best pizza I've ever had! Highly recommend!" - John D.</p>
+    <p>"Delivery was fast and food was fresh, loved it!" - Sarah W.</p>
+    <p>"Great variety of pizzas. Perfect for family dinners!" - Mark T.</p>
+  </div>
 
   <!-- Footer Section -->
   <footer>
@@ -220,5 +254,20 @@
       <li><a href="#">Instagram</a></li>
     </ul>
   </footer>
-</body>
-</html>
+
+  <script>
+    function toggleTab(tabName) {
+      // Hide all tabs
+      const tabs = document.querySelectorAll('.tab-content');
+      tabs.forEach(tab => tab.classList.remove('active'));
+
+      // Show the clicked tab
+      const activeTab = document.getElementById(tabName);
+      activeTab.classList.add('active');
+
+      // Change tab color on click
+      const tabButtons = document.querySelectorAll('.info-tabs div');
+      tabButtons.forEach(button => button.style.backgroundColor = '#ff6f61');
+      document.getElementById('tab-' + tabName).style.backgroundColor = '#ff4f3d';
+    }
+

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GoodMoodFood - Interactive Selector</title>
+  <style>
+    /* Global Styles */
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+
+    .game-container {
+      padding: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      color: #333;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+      color: #fff;
+      background-color: #ff6f61;
+    }
+
+    button:hover {
+      background-color: #ff4f3d;
+    }
+
+    .results {
+      margin-top: 20px;
+    }
+
+    .results .option {
+      background: #fff;
+      margin: 10px 0;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .game-step {
+      padding: 20px;
+      opacity: 0;
+      animation: fadeIn 0.5s forwards;
+    }
+
+    .game-step.active {
+      opacity: 1;
+    }
+
+    .mood-options button, .filter-options button, .budget-options button {
+      padding: 10px 20px;
+      margin: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+      color: #fff;
+      background-color: #ff6f61;
+    }
+
+    .mood-options button:hover, .filter-options button:hover, .budget-options button:hover {
+      background-color: #ff4f3d;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* Slide-up animation for final results */
+    @keyframes slideUp {
+      from {
+        transform: translateY(50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    #final-options {
+      animation: slideUp 0.5s forwards;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="game-container">
+    <!-- Mood Selection Step -->
+    <div id="game-step-1" class="game-step active">
+      <h2>How are you feeling today?</h2>
+      <div class="mood-options">
+        <button class="mood" data-mood="happy">😊 Happy</button>
+        <button class="mood" data-mood="stressed">😩 Stressed</button>
+        <button class="mood" data-mood="tired">😴 Tired</button>
+        <button class="mood" data-mood="adventurous">🤩 Adventurous</button>
+      </div>
+    </div>
+
+    <!-- Dietary Preferences Step -->
+    <div id="game-step-2" class="game-step hidden">
+      <h2>Do you have any dietary preferences?</h2>
+      <div class="filter-options">
+        <button class="filter" data-filter="vegetarian">Vegetarian</button>
+        <button class="filter" data-filter="vegan">Vegan</button>
+        <button class="filter" data-filter="gluten-free">Gluten-Free</button>
+        <button class="filter" data-filter="none">No Restrictions</button>
+      </div>
+    </div>
+
+    <!-- Budget Step -->
+    <div id="game-step-3" class="game-step hidden">
+      <h2>What's your budget?</h2>
+      <div class="budget-options">
+        <button class="budget" data-budget="low">Low ($)</button>
+        <button class="budget" data-budget="medium">Medium ($$)</button>
+        <button class="budget" data-budget="high">High ($$$)</button>
+      </div>
+    </div>
+
+    <!-- Final Recommendations -->
+    <div id="final-options" class="hidden">
+      <h2>Here are your recommended options:</h2>
+      <div class="results"></div>
+    </div>
+  </div>
+
+  <script>
+    // Handle mood selection with fade animation
+    document.querySelectorAll('.mood').forEach(button => {
+      button.addEventListener('click', () => {
+        document.getElementById('game-step-1').classList.remove('active');
+        document.getElementById('game-step-1').classList.add('hidden');
+        document.getElementById('game-step-2').classList.remove('hidden');
+        document.getElementById('game-step-2').classList.add('active');
+      });
+    });
+
+    // Handle dietary preferences with fade animation
+    document.querySelectorAll('.filter').forEach(button => {
+      button.addEventListener('click', () => {
+        document.getElementById('game-step-2').classList.remove('active');
+        document.getElementById('game-step-2').classList.add('hidden');
+        document.getElementById('game-step-3').classList.remove('hidden');
+        document.getElementById('game-step-3').classList.add('active');
+      });
+    });
+
+    // Handle budget selection with slide-up animation for results
+    document.querySelectorAll('.budget').forEach(button => {
+      button.addEventListener('click', () => {
+        document.getElementById('game-step-3').classList.remove('active');
+        document.getElementById('game-step-3').classList.add('hidden');
+        const results = document.getElementById('final-options');
+        results.classList.remove('hidden');
+        results.classList.add('active');
+
+        // Here you can fetch data from an API or a database
+        // For now, static data is being displayed
+        results.querySelector('.results').innerHTML = `
+          <div class="option">Pizza Palace - Medium Pizza ($$)</div>
+          <div class="option">Burger Haven - Veggie Burger ($)</div>
+        `;
+      });
+    });
+  </script>
+
+</body>
+</html>

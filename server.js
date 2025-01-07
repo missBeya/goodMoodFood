@@ -1,4 +1,4 @@
-const express = require('express');
+/*const express = require('express');
 const mysql = require('mysql2');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -54,4 +54,24 @@ app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
 
+*/
+// server.js
+const express = require('express');
+const app = express();
+const authRoutes = require('./Routes/authRoutes'); // Import routes
+const cors = require('cors');
+const bodyParser = require('body-parser');
+
+// Middlewares
+app.use(cors()); // Allow cross-origin requests
+app.use(bodyParser.json()); // Parse incoming JSON data
+
+// Use authentication routes
+app.use('/auth', authRoutes);
+
+// Start server
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
 
