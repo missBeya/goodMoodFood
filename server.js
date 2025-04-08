@@ -56,7 +56,7 @@ app.listen(PORT, () => {
 
 */
 // server.js
-const express = require('express');
+/*const express = require('express');
 const app = express();
 const authRoutes = require('./Routes/authRoutes'); // Import routes
 const cors = require('cors');
@@ -73,5 +73,5 @@ app.use('/auth', authRoutes);
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
-});
+});*/
 
