@@ -1,5 +1,6 @@
 // Import Firebase SDK functions
-import { initializeApp } from "firebase/app";
+// import { initializeApp } from "firebase/app";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getAnalytics } from "firebase/analytics";
 
 // Your Firebase configuration

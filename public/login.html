@@ -5,21 +5,111 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login - GoodMoodFood</title>
   <link rel="stylesheet" href="../public/styles/main.css"> <!-- Adjust path if needed -->
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #fdfdfd;
+      margin: 0;
+      color: #333;
+    }
+
+    header {
+      background-color: #000;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .logo h1 {
+      font-size: 2.2rem;
+      margin: 0;
+    }
+
+    .login-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 80vh;
+      padding: 20px;
+    }
+
+    .login-form {
+      background-color: #fff;
+      padding: 35px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .login-form h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #222;
+    }
+
+    .login-form label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: #444;
+    }
+
+    .login-form input[type="email"],
+    .login-form input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      font-size: 1rem;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    .login-form input[type="submit"] {
+      background-color: #ff6f61;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      padding: 12px;
+      font-size: 1.1rem;
+      border-radius: 8px;
+      width: 100%;
+      transition: background-color 0.3s ease;
+    }
+
+    .login-form input[type="submit"]:hover {
+      background-color: #e55447;
+    }
+
+    .alt-option {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .alt-option a {
+      color: #ff6f61;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .alt-option a:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      background-color: #222;
+      color: #eee;
+      text-align: center;
+      padding: 15px 10px;
+      font-size: 0.9rem;
+    }
+  </style>
 </head>
 <body>
   <header>
     <div class="logo">
       <h1>GoodMoodFood</h1>
     </div>
-    <nav>
-      <ul>
-        <li><a href="#">Home</a></li>
-        <li><a href="#">About Us</a></li>
-        <li><a href="#">Contact</a></li>
-        <li><a href="login.html">Login</a></li>
-        <li><a href="register.html">Sign Up</a></li>
-      </ul>
-    </nav>
   </header>
 
   <div class="login-container">
@@ -45,21 +135,41 @@
     <p>&copy; 2024 GoodMoodFood. All rights reserved.</p>
   </footer>
 
-  <script type="module">
+  <<script type="module">
     import { loginUser } from '../scripts/auth.js';
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import app from '../firebase-config.js'; // adjust path if needed
+  
+    const db = getFirestore(app);
     const form = document.getElementById('loginForm');
+  
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
+  
       try {
-        await loginUser(email, password);
-        alert("Login successful!");
-        window.location.href = "dashboard.html";
+        const user = await loginUser(email, password);
+        const uid = user.uid;
+  
+        const userDoc = await getDoc(doc(db, "users", uid));
+  
+        if (userDoc.exists()) {
+          const data = userDoc.data();
+          if (data.completedProfile) {
+            window.location.href = "dashboard.html";
+          } else {
+            window.location.href = "questionnaire.html";
+          }
+        } else {
+          alert("User data not found.");
+        }
+  
       } catch (error) {
         alert("Error: " + error.message);
       }
     });
   </script>
+  
 </body>
 </html>

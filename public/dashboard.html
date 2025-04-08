@@ -1,197 +1,192 @@
 <!DOCTYPE html>
 <html lang="en">
+>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GoodMoodFood - Interactive Selector</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - GoodMoodFood</title>
+  <link rel="stylesheet" href="../styles/main.css" />
   <style>
-    /* Global Styles */
     body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background-color: #f4f4f4;
+      font-family: 'Segoe UI', sans-serif;
       margin: 0;
-      padding: 0;
-    }
-
-    .game-container {
-      padding: 20px;
-      max-width: 600px;
-      margin: 0 auto;
-      background-color: #fff;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    h2 {
+      background: #fdfdfd;
       color: #333;
     }
 
-    .hidden {
-      display: none;
-    }
-
-    button {
-      padding: 10px 20px;
-      margin: 10px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 1rem;
+    header {
+      background-color: #000;
       color: #fff;
-      background-color: #ff6f61;
+      padding: 20px;
+      text-align: center;
     }
 
-    button:hover {
-      background-color: #ff4f3d;
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
     }
 
-    .results {
+    .welcome-section {
+      text-align: center;
       margin-top: 20px;
     }
 
-    .results .option {
-      background: #fff;
-      margin: 10px 0;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    .welcome-section h2 {
+      color: #ff6f61;
+      font-size: 2.2rem;
+      margin-bottom: 10px;
     }
 
-    .game-step {
-      padding: 20px;
-      opacity: 0;
-      animation: fadeIn 0.5s forwards;
+    .mood-section {
+      margin: 30px 0;
+      text-align: center;
     }
 
-    .game-step.active {
-      opacity: 1;
-    }
-
-    .mood-options button, .filter-options button, .budget-options button {
-      padding: 10px 20px;
+    select, button {
+      padding: 10px;
       margin: 10px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
       font-size: 1rem;
-      color: #fff;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
       background-color: #ff6f61;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
     }
 
-    .mood-options button:hover, .filter-options button:hover, .budget-options button:hover {
-      background-color: #ff4f3d;
+    button:hover {
+      background-color: #e55447;
     }
 
-    /* Animations */
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
+    .cards {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      margin-top: 20px;
     }
 
-    /* Slide-up animation for final results */
-    @keyframes slideUp {
-      from {
-        transform: translateY(50px);
-        opacity: 0;
-      }
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 300px;
+      overflow: hidden;
+      transition: transform 0.2s ease;
     }
 
-    #final-options {
-      animation: slideUp 0.5s forwards;
+    .card:hover {
+      transform: scale(1.02);
     }
 
+    .card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+
+    .card-content {
+      padding: 15px;
+    }
+
+    .card-content h4 {
+      margin: 0 0 10px 0;
+      font-size: 1.2rem;
+    }
+
+    .card-content p {
+      font-size: 0.95rem;
+      color: #666;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: #222;
+      color: white;
+      margin-top: 40px;
+    }
   </style>
 </head>
 <body>
+  <header>
+    <h1>GoodMoodFood</h1>
+    <p>Welcome back! Discover food that matches your mood, here in Hull 🇬🇧</p>
+  </header>
 
-  <div class="game-container">
-    <!-- Mood Selection Step -->
-    <div id="game-step-1" class="game-step active">
-      <h2>How are you feeling today?</h2>
-      <div class="mood-options">
-        <button class="mood" data-mood="happy">😊 Happy</button>
-        <button class="mood" data-mood="stressed">😩 Stressed</button>
-        <button class="mood" data-mood="tired">😴 Tired</button>
-        <button class="mood" data-mood="adventurous">🤩 Adventurous</button>
+  <div class="container">
+    <section class="welcome-section">
+      <h2>Hello, <span id="userEmail">User</span>!</h2>
+    </section>
+
+    <section class="mood-section">
+      <h3>Select How You're Feeling Today</h3>
+      <select id="mood">
+        <option value="happy">😊 Happy</option>
+        <option value="sad">😞 Sad</option>
+        <option value="tired">😴 Tired</option>
+        <option value="romantic">😍 Romantic</option>
+        <option value="focused">😎 Focused</option>
+        <option value="sick">🤕 Unwell</option>
+        <option value="stressed">😠 Stressed</option>
+      </select>
+      <button id="findBtn">Find Food</button>
+    </section>
+
+    <section>
+      <h3>Featured Restaurants in Hull</h3>
+      <div class="cards" id="results">
+        <!-- Dynamically populated -->
       </div>
-    </div>
-
-    <!-- Dietary Preferences Step -->
-    <div id="game-step-2" class="game-step hidden">
-      <h2>Do you have any dietary preferences?</h2>
-      <div class="filter-options">
-        <button class="filter" data-filter="vegetarian">Vegetarian</button>
-        <button class="filter" data-filter="vegan">Vegan</button>
-        <button class="filter" data-filter="gluten-free">Gluten-Free</button>
-        <button class="filter" data-filter="none">No Restrictions</button>
-      </div>
-    </div>
-
-    <!-- Budget Step -->
-    <div id="game-step-3" class="game-step hidden">
-      <h2>What's your budget?</h2>
-      <div class="budget-options">
-        <button class="budget" data-budget="low">Low ($)</button>
-        <button class="budget" data-budget="medium">Medium ($$)</button>
-        <button class="budget" data-budget="high">High ($$$)</button>
-      </div>
-    </div>
-
-    <!-- Final Recommendations -->
-    <div id="final-options" class="hidden">
-      <h2>Here are your recommended options:</h2>
-      <div class="results"></div>
-    </div>
+    </section>
   </div>
 
-  <script>
-    // Handle mood selection with fade animation
-    document.querySelectorAll('.mood').forEach(button => {
-      button.addEventListener('click', () => {
-        document.getElementById('game-step-1').classList.remove('active');
-        document.getElementById('game-step-1').classList.add('hidden');
-        document.getElementById('game-step-2').classList.remove('hidden');
-        document.getElementById('game-step-2').classList.add('active');
-      });
-    });
+  <footer>
+    &copy; 2024 GoodMoodFood. All rights reserved.
+  </footer>
 
-    // Handle dietary preferences with fade animation
-    document.querySelectorAll('.filter').forEach(button => {
-      button.addEventListener('click', () => {
-        document.getElementById('game-step-2').classList.remove('active');
-        document.getElementById('game-step-2').classList.add('hidden');
-        document.getElementById('game-step-3').classList.remove('hidden');
-        document.getElementById('game-step-3').classList.add('active');
-      });
-    });
-
-    // Handle budget selection with slide-up animation for results
-    document.querySelectorAll('.budget').forEach(button => {
-      button.addEventListener('click', () => {
-        document.getElementById('game-step-3').classList.remove('active');
-        document.getElementById('game-step-3').classList.add('hidden');
-        const results = document.getElementById('final-options');
-        results.classList.remove('hidden');
-        results.classList.add('active');
-
-        // Here you can fetch data from an API or a database
-        // For now, static data is being displayed
-        results.querySelector('.results').innerHTML = `
-          <div class="option">Pizza Palace - Medium Pizza ($$)</div>
-          <div class="option">Burger Haven - Veggie Burger ($)</div>
+  <script type="module">
+    import app from "../firebase-config.js";
+    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  
+    const db = getFirestore(app);
+    const moodSelect = document.getElementById("moodSelect");
+    const findFoodBtn = document.getElementById("findFoodBtn");
+    const container = document.getElementById("recommendations");
+  
+    findFoodBtn.addEventListener("click", async () => {
+      const mood = moodSelect.value;
+  
+      container.innerHTML = "<p>Loading recommendations...</p>";
+  
+      const q = query(collection(db, "meals"), where("moods", "array-contains", mood));
+      const querySnapshot = await getDocs(q);
+  
+      if (querySnapshot.empty) {
+        container.innerHTML = "<p>No meals found for this mood. Try a different one!</p>";
+        return;
+      }
+  
+      container.innerHTML = ""; // Clear previous results
+  
+      querySnapshot.forEach(doc => {
+        const meal = doc.data();
+        container.innerHTML += `
+          <div class="meal-card">
+            <img src="${meal.image}" alt="${meal.name}" />
+            <h3>${meal.name}</h3>
+            <p><strong>${meal.restaurant}</strong> – ${meal.price}</p>
+            <small>${meal.tags?.join(", ")}</small>
+          </div>
         `;
       });
     });
   </script>
-
+  
 </body>
 </html>

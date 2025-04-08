@@ -6,57 +6,54 @@
   <title>Sign Up - GoodMoodFood</title>
   <link rel="stylesheet" href="../styles/main.css">
   <style>
+    /* Slideshow Background */
     .background-slideshow {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-  overflow: hidden;
-  pointer-events: none;
-}
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+      pointer-events: none;
+    }
 
-.background-slideshow .slide {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0.65;
-  transition: opacity 1.5s ease-in-out;
-}
+    .background-slideshow .slide {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      filter: brightness(0.6);
+      transition: opacity 1.5s ease-in-out;
+    }
 
-.background-slideshow .slide.active {
-  opacity: 1;
-}
+    .background-slideshow .slide.active {
+      opacity: 1;
+    }
 
-body::before {
-  content: "";
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.85); /* overlay for readability */
-  z-index: 0;
-}
-
+    /* Page Layout */
     body {
-      background: linear-gradient(to right, #ff6f61, #ffa07a);
+      background: none;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
+      padding: 0 20px;
     }
 
     .signup-card {
-      background-color: #ffffff;
+      background-color: rgba(255, 255, 255, 0.92);
       padding: 40px;
       border-radius: 16px;
       max-width: 420px;
       width: 100%;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
       animation: fadeIn 0.6s ease-in-out;
+      position: relative;
+      z-index: 1;
     }
 
     .signup-card h2 {
@@ -118,6 +115,32 @@ body::before {
       text-decoration: underline;
     }
 
+    footer {
+      text-align: center;
+      color: #fff;
+      padding: 15px 10px;
+      font-size: 0.9rem;
+      margin-top: 40px;
+    }
+
+    footer ul {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 10px;
+    }
+
+    footer ul li a {
+      color: #fff;
+      text-decoration: none;
+    }
+
+    footer ul li a:hover {
+      text-decoration: underline;
+    }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
@@ -128,17 +151,16 @@ body::before {
         padding: 30px 20px;
       }
     }
-
-    
   </style>
 </head>
-<div class="background-slideshow">
-  <img src="../images/burger-8933592_1920.jpg" class="slide active">
-  <img src="../images/pizza-5275191_1920.jpg" class="slide">
-  <img src="../images/grilling-2415223_1920.jpg" class="slide">
-</div>
-
 <body>
+
+  <!-- Background Slideshow -->
+  <div class="background-slideshow">
+    <img src="../images/baked-goods-1846460_1920.jpg" class="slide">
+  </div>
+
+  <!-- Sign Up Form -->
   <div class="signup-card">
     <h2>Join GoodMoodFood</h2>
     <form id="signupForm">
@@ -156,11 +178,25 @@ body::before {
     </div>
   </div>
 
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2024 GoodMoodFood. All rights reserved.</p>
+    <ul class="social-links">
+      <li><a href="#">Facebook</a></li>
+      <li><a href="#">Twitter</a></li>
+      <li><a href="#">Instagram</a></li>
+    </ul>
+  </footer>
+
+  <!-- Firebase Auth Logic -->
   <script type="module">
-    import app from '../firebase-config.js';
+    import app from '../firebase-congig.js';
+    import { auth, db } from '../firebase-config.js';
     import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const auth = getAuth(app);
+    const db = getFirestore(app);
 
     document.getElementById('signupForm').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -169,23 +205,33 @@ body::before {
 
       try {
         const userCred = await createUserWithEmailAndPassword(auth, email, password);
-        localStorage.setItem("userUid", userCred.user.uid);
+        const uid = userCred.user.uid;
+
+        await setDoc(doc(db, "users", uid), {
+          email: email,
+          createdAt: new Date(),
+          completedProfile: false
+        });
+
+        Console.log("UID:",uid)
         window.location.href = "questionnaire.html";
       } catch (err) {
         alert("Error: " + err.message);
       }
     });
   </script>
+
+  <!-- Slideshow Script -->
   <script>
     let slides = document.querySelectorAll('.background-slideshow .slide');
     let current = 0;
-  
+
     setInterval(() => {
       slides[current].classList.remove('active');
       current = (current + 1) % slides.length;
       slides[current].classList.add('active');
     }, 4000);
   </script>
-  
+
 </body>
 </html>

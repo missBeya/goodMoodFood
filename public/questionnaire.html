@@ -2,115 +2,115 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Your Food Preferences - GoodMoodFood</title>
-  <link rel="stylesheet" href="../styles/main.css">
+  <link rel="stylesheet" href="../styles/main.css" />
   <style>
     body {
-      background: linear-gradient(to right, #ff6f61, #ffa07a);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
-    }
-
-    .questionnaire-card {
-      background-color: #fff;
-      padding: 40px;
-      border-radius: 16px;
-      max-width: 600px;
-      width: 100%;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-      animation: fadeIn 0.6s ease-in-out;
-    }
-
-    .questionnaire-card h2 {
-      text-align: center;
+      background: #fdfdfd;
       color: #333;
-      margin-bottom: 10px;
     }
 
-    .questionnaire-card p {
+    header {
+      background-color: #000;
+      color: #fff;
+      padding: 20px;
       text-align: center;
-      font-size: 0.95rem;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 30px;
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    }
+
+    h2, p {
+      text-align: center;
+    }
+
+    p {
       color: #666;
-      margin-bottom: 25px;
     }
 
     .form-section {
       margin-bottom: 25px;
     }
 
-    .form-section label {
+    label {
+      font-weight: 600;
       display: block;
-      margin-bottom: 8px;
-      font-weight: 500;
-      color: #444;
+      margin-bottom: 10px;
     }
 
     .checkbox-group, .radio-group {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 12px;
     }
 
     .checkbox-group label,
     .radio-group label {
       background-color: #f5f5f5;
-      padding: 10px 14px;
-      border-radius: 6px;
-      cursor: pointer;
+      padding: 10px 16px;
+      border-radius: 8px;
       font-size: 0.95rem;
+      cursor: pointer;
     }
 
     select, input[type="submit"] {
       width: 100%;
       padding: 12px;
-      border-radius: 8px;
       font-size: 1rem;
+      border-radius: 8px;
       border: 1px solid #ccc;
-      transition: border-color 0.3s ease;
-    }
-
-    select:focus {
-      border-color: #ff6f61;
-      outline: none;
+      margin-top: 8px;
     }
 
     input[type="submit"] {
       background-color: #ff6f61;
-      color: #fff;
-      font-weight: bold;
+      color: white;
+      font-weight: 600;
       border: none;
-      margin-top: 10px;
       cursor: pointer;
+      transition: background-color 0.3s ease;
     }
 
     input[type="submit"]:hover {
       background-color: #e55447;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: #222;
+      color: white;
+      margin-top: 40px;
     }
 
-    @media (max-width: 500px) {
-      .questionnaire-card {
-        padding: 30px 20px;
+    @media (max-width: 600px) {
+      .container {
+        margin: 20px;
+        padding: 20px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="questionnaire-card">
+  <header>
+    <h1>GoodMoodFood</h1>
+    <p>Let us know your preferences to personalize your food journey 🍱</p>
+  </header>
+
+  <div class="container">
     <h2>Your Food Preferences</h2>
-    <p>Let us know your tastes and dietary needs so we can recommend meals you'll love!</p>
+    <p>We’ll use your answers to tailor smarter food suggestions just for you!</p>
 
     <form id="questionnaireForm">
-      <!-- Allergies -->
       <div class="form-section">
         <label>Do you have any food allergies?</label>
         <div class="checkbox-group">
@@ -121,7 +121,6 @@
         </div>
       </div>
 
-      <!-- Intolerance -->
       <div class="form-section">
         <label>Any food intolerances?</label>
         <div class="checkbox-group">
@@ -132,18 +131,16 @@
         </div>
       </div>
 
-      <!-- Lifestyle -->
       <div class="form-section">
         <label>How would you describe your daily activity?</label>
         <select id="lifestyle">
-          <option value="sedentary">Sedentary (mostly sitting)</option>
+          <option value="sedentary">Sedentary</option>
           <option value="moderate">Moderately active</option>
-          <option value="active">Very active (gym/sports)</option>
+          <option value="active">Very active</option>
           <option value="busy">Always on the move</option>
         </select>
       </div>
 
-      <!-- Budget -->
       <div class="form-section">
         <label>Your typical meal budget:</label>
         <div class="radio-group">
@@ -154,11 +151,10 @@
         </div>
       </div>
 
-      <!-- Food Personality -->
       <div class="form-section">
         <label>Which best describes your food personality?</label>
         <select id="foodPersonality">
-          <option value="adventurous">Adventurous – I like new things</option>
+          <option value="adventurous">Adventurous</option>
           <option value="comfort">Comfort food lover</option>
           <option value="healthy">Health-conscious</option>
           <option value="fastfood">Fast food fan</option>
@@ -170,9 +166,13 @@
     </form>
   </div>
 
+  <footer>
+    &copy; 2024 GoodMoodFood. All rights reserved.
+  </footer>
+
   <script type="module">
     import app from '../firebase-config.js';
-    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const db = getFirestore(app);
     const uid = localStorage.getItem("userUid");
@@ -191,7 +191,7 @@
       const foodPersonality = document.getElementById("foodPersonality").value;
 
       try {
-        await setDoc(doc(db, "users", uid), {
+        await updateDoc(doc(db, "users", uid), {
           preferences: {
             allergies,
             intolerance,
@@ -199,11 +199,10 @@
             budget,
             foodPersonality
           },
-          completedProfile: true,
-          createdAt: new Date()
+          completedProfile: true
         });
 
-        alert("Preferences saved!");
+        alert("Preferences saved successfully!");
         window.location.href = "dashboard.html";
       } catch (error) {
         alert("Error saving preferences: " + error.message);
