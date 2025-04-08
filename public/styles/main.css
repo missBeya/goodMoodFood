@@ -1,0 +1,215 @@
+/* Reset & Global */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #fdfdfd;
+    color: #333;
+    line-height: 1.6;
+  }
+  
+  /* Header */
+  header {
+    background-color: #000;
+    color: #fff;
+    padding: 20px 10px;
+    text-align: center;
+  }
+  
+  header .logo h1 {
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+  }
+  
+  nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    list-style: none;
+  }
+  
+  nav ul li {
+    margin: 0 12px;
+  }
+  
+  nav ul li a {
+    text-decoration: none;
+    color: #fff;
+    font-weight: 500;
+    font-size: 1rem;
+    transition: color 0.3s ease;
+  }
+  
+  nav ul li a:hover {
+    color: #ff6f61;
+  }
+  
+  /* Login Container */
+  .login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 75vh;
+    padding: 40px 20px;
+    background-color: #f4f4f4;
+  }
+  
+  .login-form {
+    background-color: #fff;
+    padding: 35px 30px;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 420px;
+    transition: all 0.3s ease;
+  }
+  
+  .login-form h2 {
+    font-size: 2rem;
+    margin-bottom: 25px;
+    color: #222;
+  }
+  
+  .login-form label {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #555;
+    display: block;
+    margin-bottom: 8px;
+  }
+  
+  .login-form input[type="email"],
+  .login-form input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    transition: border-color 0.2s ease;
+  }
+  
+  .login-form input[type="email"]:focus,
+  .login-form input[type="password"]:focus {
+    border-color: #ff6f61;
+    outline: none;
+  }
+  
+  .login-form input[type="submit"] {
+    background-color: #ff6f61;
+    border: none;
+    color: #fff;
+    font-size: 1.1rem;
+    padding: 12px;
+    width: 100%;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .login-form input[type="submit"]:hover {
+    background-color: #e55547;
+  }
+  
+  /* Alt Option */
+  .login-form .alt-option {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 0.95rem;
+  }
+  
+  .login-form .alt-option a {
+    color: #ff6f61;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  
+  .login-form .alt-option a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Footer */
+  footer {
+    background-color: #111;
+    color: #eee;
+    text-align: center;
+    padding: 15px 10px;
+    font-size: 0.9rem;
+    position: sticky;
+    width: 100%;
+    bottom: 0;
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 500px) {
+    header .logo h1 {
+      font-size: 1.8rem;
+    }
+  
+    nav ul li a {
+      font-size: 0.95rem;
+    }
+  
+    .login-form h2 {
+      font-size: 1.7rem;
+    }
+  
+    .login-form {
+      padding: 25px 20px;
+    }
+  }
+  .preference-form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+  }
+  
+  .form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+  }
+  
+  /* Improve label + input consistency */
+  .preference-form label {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #444;
+  }
+  
+  .preference-form input,
+  .preference-form select {
+    padding: 12px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    width: 100%;
+    transition: border-color 0.3s ease;
+  }
+  
+  .preference-form input:focus,
+  .preference-form select:focus {
+    border-color: #ff6f61;
+    outline: none;
+  }
+  
+  /* Spacing under the form */
+  .alt-option {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .alt-option a {
+    color: #ff6f61;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  

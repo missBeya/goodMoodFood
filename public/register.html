@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register - GoodMoodFood</title>
+  <link rel="stylesheet" href="../public/styles/main.css">
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <h1>GoodMoodFood</h1>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Contact</a></li>
+        <li><a href="login.html">Login</a></li>
+        <li><a href="register.html">Sign Up</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="register-container">
+    <div class="register-form">
+      <h2>Create Your Account</h2>
+      <form id="registerForm" class="preference-form">
+        <!-- Basic Info -->
+        <div class="form-section">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" required>
+      
+          <label for="password">Password</label>
+          <input type="password" id="password" required>
+        </div>
+      
+        <!-- Dietary -->
+        <div class="form-section">
+          <label for="allergies">Do you have any allergies?</label>
+          <input type="text" id="allergies" placeholder="e.g., peanuts, dairy, shellfish">
+      
+          <label for="intolerance">Any food intolerances?</label>
+          <input type="text" id="intolerance" placeholder="e.g., gluten, lactose">
+        </div>
+      
+        <!-- Lifestyle -->
+        <div class="form-section">
+          <label for="lifestyle">How would you describe your lifestyle?</label>
+          <select id="lifestyle">
+            <option value="active">Active (e.g., gym-goer)</option>
+            <option value="balanced">Balanced</option>
+            <option value="busy">Busy schedule</option>
+            <option value="student">Student</option>
+          </select>
+      
+          <label for="budget">Your regular meal budget (per order)</label>
+          <select id="budget">
+            <option value="5">Under £5</option>
+            <option value="10">£5–£10</option>
+            <option value="15">£10–£15</option>
+            <option value="20">£15–£20</option>
+            <option value="20+">Over £20</option>
+          </select>
+        </div>
+      
+        <!-- Food Personality -->
+        <div class="form-section">
+          <label for="foodPersonality">Which best describes your food personality?</label>
+          <select id="foodPersonality">
+            <option value="adventurous">Adventurous – I like to try new things</option>
+            <option value="comfort">Comfort food lover</option>
+            <option value="healthy">Health-conscious</option>
+            <option value="fastfood">Fast food fan</option>
+            <option value="plantbased">Plant-based / Vegan</option>
+          </select>
+        </div>
+      
+        <input type="submit" value="Register">
+      </form>
+      
+      <div class="alt-option">
+        <p>Already have an account? <a href="login.html">Login here</a></p>
+      </div>
+      
+
+  <footer>
+    <p>&copy; 2024 GoodMoodFood. All rights reserved.</p>
+  </footer>
+
+  <script type="module">
+    import { registerUser } from '../scripts/auth.js';
+    import app from '../firebase-config.js';
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const db = getFirestore(app);
+
+    const form = document.getElementById("registerForm");
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const allergies = document.getElementById("allergies").value;
+      const intolerance = document.getElementById("intolerance").value;
+      const lifestyle = document.getElementById("lifestyle").value;
+      const budget = document.getElementById("budget").value;
+      const foodPersonality = document.getElementById("foodPersonality").value;
+
+      try {
+        const userCredential = await registerUser(email, password);
+        const uid = userCredential.user.uid;
+
+        await setDoc(doc(db, "users", uid), {
+          email,
+          preferences: {
+            allergies,
+            intolerance,
+            lifestyle,
+            budget,
+            foodPersonality
+          },
+          createdAt: new Date()
+        });
+
+        alert("Registration successful!");
+        window.location.href = "dashboard.html";
+      } catch (error) {
+        alert("Error: " + error.message);
+      }
+    });
+  </script>
+</body>
+</html>
