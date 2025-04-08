@@ -212,4 +212,58 @@
     font-weight: 600;
     text-decoration: none;
   }
+  .subheading {
+    font-size: 1rem;
+    color: #666;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .checkbox-group,
+  .radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  
+  .checkbox-group label,
+  .radio-group label {
+    background-color: #f0f0f0;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    cursor: pointer;
+  }
+  
+  .profile-preview {
+    margin-top: 30px;
+    padding: 25px;
+    background-color: #fefefe;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  
+  .profile-preview h3 {
+    margin-bottom: 15px;
+  }
+  
+  .profile-preview ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .profile-preview li {
+    margin-bottom: 10px;
+  }
+  
+  .profile-preview button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background-color: #ff6f61;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
   

@@ -3,132 +3,189 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Register - GoodMoodFood</title>
-  <link rel="stylesheet" href="../public/styles/main.css">
+  <title>Sign Up - GoodMoodFood</title>
+  <link rel="stylesheet" href="../styles/main.css">
+  <style>
+    .background-slideshow {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.background-slideshow .slide {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.65;
+  transition: opacity 1.5s ease-in-out;
+}
+
+.background-slideshow .slide.active {
+  opacity: 1;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.85); /* overlay for readability */
+  z-index: 0;
+}
+
+    body {
+      background: linear-gradient(to right, #ff6f61, #ffa07a);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+    }
+
+    .signup-card {
+      background-color: #ffffff;
+      padding: 40px;
+      border-radius: 16px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      animation: fadeIn 0.6s ease-in-out;
+    }
+
+    .signup-card h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .signup-card form {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .signup-card label {
+      font-weight: 500;
+      font-size: 0.95rem;
+      color: #444;
+    }
+
+    .signup-card input {
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+
+    .signup-card input:focus {
+      border-color: #ff6f61;
+      outline: none;
+    }
+
+    .signup-card input[type="submit"] {
+      background-color: #ff6f61;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+
+    .signup-card input[type="submit"]:hover {
+      background-color: #e55447;
+    }
+
+    .alt-option {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .alt-option a {
+      color: #ff6f61;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .alt-option a:hover {
+      text-decoration: underline;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 480px) {
+      .signup-card {
+        padding: 30px 20px;
+      }
+    }
+
+    
+  </style>
 </head>
+<div class="background-slideshow">
+  <img src="../images/burger-8933592_1920.jpg" class="slide active">
+  <img src="../images/pizza-5275191_1920.jpg" class="slide">
+  <img src="../images/grilling-2415223_1920.jpg" class="slide">
+</div>
+
 <body>
-  <header>
-    <div class="logo">
-      <h1>GoodMoodFood</h1>
+  <div class="signup-card">
+    <h2>Join GoodMoodFood</h2>
+    <form id="signupForm">
+      <label for="email">Email Address</label>
+      <input type="email" id="email" placeholder="you@example.com" required />
+
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="Minimum 6 characters" required />
+
+      <input type="submit" value="Continue to Preferences">
+    </form>
+
+    <div class="alt-option">
+      <p>Already have an account? <a href="login.html">Login here</a></p>
     </div>
-    <nav>
-      <ul>
-        <li><a href="#">Home</a></li>
-        <li><a href="#">About Us</a></li>
-        <li><a href="#">Contact</a></li>
-        <li><a href="login.html">Login</a></li>
-        <li><a href="register.html">Sign Up</a></li>
-      </ul>
-    </nav>
-  </header>
-
-  <div class="register-container">
-    <div class="register-form">
-      <h2>Create Your Account</h2>
-      <form id="registerForm" class="preference-form">
-        <!-- Basic Info -->
-        <div class="form-section">
-          <label for="email">Email Address</label>
-          <input type="email" id="email" required>
-      
-          <label for="password">Password</label>
-          <input type="password" id="password" required>
-        </div>
-      
-        <!-- Dietary -->
-        <div class="form-section">
-          <label for="allergies">Do you have any allergies?</label>
-          <input type="text" id="allergies" placeholder="e.g., peanuts, dairy, shellfish">
-      
-          <label for="intolerance">Any food intolerances?</label>
-          <input type="text" id="intolerance" placeholder="e.g., gluten, lactose">
-        </div>
-      
-        <!-- Lifestyle -->
-        <div class="form-section">
-          <label for="lifestyle">How would you describe your lifestyle?</label>
-          <select id="lifestyle">
-            <option value="active">Active (e.g., gym-goer)</option>
-            <option value="balanced">Balanced</option>
-            <option value="busy">Busy schedule</option>
-            <option value="student">Student</option>
-          </select>
-      
-          <label for="budget">Your regular meal budget (per order)</label>
-          <select id="budget">
-            <option value="5">Under £5</option>
-            <option value="10">£5–£10</option>
-            <option value="15">£10–£15</option>
-            <option value="20">£15–£20</option>
-            <option value="20+">Over £20</option>
-          </select>
-        </div>
-      
-        <!-- Food Personality -->
-        <div class="form-section">
-          <label for="foodPersonality">Which best describes your food personality?</label>
-          <select id="foodPersonality">
-            <option value="adventurous">Adventurous – I like to try new things</option>
-            <option value="comfort">Comfort food lover</option>
-            <option value="healthy">Health-conscious</option>
-            <option value="fastfood">Fast food fan</option>
-            <option value="plantbased">Plant-based / Vegan</option>
-          </select>
-        </div>
-      
-        <input type="submit" value="Register">
-      </form>
-      
-      <div class="alt-option">
-        <p>Already have an account? <a href="login.html">Login here</a></p>
-      </div>
-      
-
-  <footer>
-    <p>&copy; 2024 GoodMoodFood. All rights reserved.</p>
-  </footer>
+  </div>
 
   <script type="module">
-    import { registerUser } from '../scripts/auth.js';
     import app from '../firebase-config.js';
-    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-    const db = getFirestore(app);
+    const auth = getAuth(app);
 
-    const form = document.getElementById("registerForm");
-    form.addEventListener("submit", async (e) => {
+    document.getElementById('signupForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      const allergies = document.getElementById("allergies").value;
-      const intolerance = document.getElementById("intolerance").value;
-      const lifestyle = document.getElementById("lifestyle").value;
-      const budget = document.getElementById("budget").value;
-      const foodPersonality = document.getElementById("foodPersonality").value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
 
       try {
-        const userCredential = await registerUser(email, password);
-        const uid = userCredential.user.uid;
-
-        await setDoc(doc(db, "users", uid), {
-          email,
-          preferences: {
-            allergies,
-            intolerance,
-            lifestyle,
-            budget,
-            foodPersonality
-          },
-          createdAt: new Date()
-        });
-
-        alert("Registration successful!");
-        window.location.href = "dashboard.html";
-      } catch (error) {
-        alert("Error: " + error.message);
+        const userCred = await createUserWithEmailAndPassword(auth, email, password);
+        localStorage.setItem("userUid", userCred.user.uid);
+        window.location.href = "questionnaire.html";
+      } catch (err) {
+        alert("Error: " + err.message);
       }
     });
   </script>
+  <script>
+    let slides = document.querySelectorAll('.background-slideshow .slide');
+    let current = 0;
+  
+    setInterval(() => {
+      slides[current].classList.remove('active');
+      current = (current + 1) % slides.length;
+      slides[current].classList.add('active');
+    }, 4000);
+  </script>
+  
 </body>
 </html>
