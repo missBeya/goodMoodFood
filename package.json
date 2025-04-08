@@ -1,0 +1,15 @@
+{
+  "name": "goodmoodfood",
+  "version": "1.0.0",
+  "description": "Mood-based food recommendation web app",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "Sarah",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
