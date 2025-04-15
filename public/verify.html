@@ -1,0 +1,21 @@
+<h2>Check your inbox 📬</h2>
+<p id="status">Waiting for email verification...</p>
+
+<script type="module">
+  import { auth } from '../firebase-config.js';
+  import { onAuthStateChanged, reload } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      await reload(user); // Refresh user status
+
+      if (user.emailVerified) {
+        window.location.href = "questionnaire.html";
+      } else {
+        document.getElementById("status").textContent = "Still not verified. Refresh this page after verifying.";
+      }
+    } else {
+      window.location.href = "login.html";
+    }
+  });
+</script>

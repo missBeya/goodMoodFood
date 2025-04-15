@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
->
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -19,6 +18,52 @@
       color: #fff;
       padding: 20px;
       text-align: center;
+      position: relative;
+    }
+
+    .settings-container {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+    }
+
+    #settingsBtn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #fff;
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: 40px;
+      right: 0;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      min-width: 180px;
+      z-index: 10;
+    }
+
+    .dropdown-menu a {
+      text-decoration: none;
+      color: #333;
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
+
+    .dropdown-menu a:hover {
+      background-color: #f5f5f5;
+    }
+
+    .hidden {
+      display: none;
     }
 
     .container {
@@ -117,6 +162,17 @@
   <header>
     <h1>GoodMoodFood</h1>
     <p>Welcome back! Discover food that matches your mood, here in Hull 🇬🇧</p>
+
+    <!-- Settings Dropdown -->
+    <div class="settings-container">
+      <button id="settingsBtn" title="Settings">⚙️</button>
+      <div id="settingsMenu" class="dropdown-menu hidden">
+        <a href="profile.html">👤 View Profile</a>
+        <a href="orders.html">🧾 Recent Orders</a>
+        <a href="questionnaire.html">⚙️ Update Preferences</a>
+        <a href="#" id="logoutBtn">🚪 Logout</a>
+      </div>
+    </div>
   </header>
 
   <div class="container">
@@ -141,7 +197,14 @@
     <section>
       <h3>Featured Restaurants in Hull</h3>
       <div class="cards" id="results">
-        <!-- Dynamically populated -->
+        <!-- Firestore meal cards -->
+      </div>
+    </section>
+
+    <section>
+      <h3>Smart Nutrition-Based Suggestions</h3>
+      <div class="cards" id="openfood-results">
+        <!-- Open Food Facts cards -->
       </div>
     </section>
   </div>
@@ -151,42 +214,132 @@
   </footer>
 
   <script type="module">
-    import app from "../firebase-config.js";
-    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-  
+    import { app } from "../firebase-config.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      query,
+      where,
+      getDocs
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const auth = getAuth(app);
     const db = getFirestore(app);
-    const moodSelect = document.getElementById("moodSelect");
-    const findFoodBtn = document.getElementById("findFoodBtn");
-    const container = document.getElementById("recommendations");
-  
+
+    const moodSelect = document.getElementById("mood");
+    const findFoodBtn = document.getElementById("findBtn");
+    const localContainer = document.getElementById("results");
+    const openFoodContainer = document.getElementById("openfood-results");
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        document.getElementById("userEmail").textContent = user.email;
+      } else {
+        window.location.href = "login.html";
+      }
+    });
+
     findFoodBtn.addEventListener("click", async () => {
       const mood = moodSelect.value;
-  
-      container.innerHTML = "<p>Loading recommendations...</p>";
-  
-      const q = query(collection(db, "meals"), where("moods", "array-contains", mood));
-      const querySnapshot = await getDocs(q);
-  
-      if (querySnapshot.empty) {
-        container.innerHTML = "<p>No meals found for this mood. Try a different one!</p>";
-        return;
+      localContainer.innerHTML = "<p>Loading local suggestions...</p>";
+      openFoodContainer.innerHTML = "<p>Loading smart suggestions...</p>";
+
+      // Firestore local meals
+      try {
+        const q = query(collection(db, "meals"), where("moods", "array-contains", mood));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+          localContainer.innerHTML = "<p>No local meals found for this mood.</p>";
+        } else {
+          localContainer.innerHTML = "";
+          querySnapshot.forEach((doc) => {
+            const meal = doc.data();
+            localContainer.innerHTML += `
+              <div class="card">
+                <img src="${meal.image}" alt="${meal.name}" />
+                <div class="card-content">
+                  <h4>${meal.name}</h4>
+                  <p><strong>${meal.restaurant}</strong> – ${meal.price}</p>
+                  <p>${meal.tags?.join(", ") || ""}</p>
+                </div>
+              </div>
+            `;
+          });
+        }
+      } catch (err) {
+        localContainer.innerHTML = `<p>Error loading local meals: ${err.message}</p>`;
       }
-  
-      container.innerHTML = ""; // Clear previous results
-  
-      querySnapshot.forEach(doc => {
-        const meal = doc.data();
-        container.innerHTML += `
-          <div class="meal-card">
-            <img src="${meal.image}" alt="${meal.name}" />
-            <h3>${meal.name}</h3>
-            <p><strong>${meal.restaurant}</strong> – ${meal.price}</p>
-            <small>${meal.tags?.join(", ")}</small>
-          </div>
-        `;
-      });
+
+      // Open Food Facts suggestions
+      const moodToNutrient = {
+        tired: "vitamin_b12",
+        stressed: "magnesium",
+        sad: "protein",
+        sick: "vitamin_c",
+        focused: "omega_3",
+        happy: "fiber",
+        romantic: "zinc"
+      };
+
+      const nutrient = moodToNutrient[mood.toLowerCase()] || "vitamin_c";
+
+      const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${nutrient}&search_simple=1&action=process&json=1`;
+
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        const results = data.products.slice(0, 6);
+
+        if (!results.length) {
+          openFoodContainer.innerHTML = "<p>No smart matches found for this mood.</p>";
+          return;
+        }
+
+        openFoodContainer.innerHTML = "";
+
+        results.forEach(product => {
+          const name = product.product_name || "Unnamed Food";
+          const image = product.image_url || "https://via.placeholder.com/300x180.png?text=No+Image";
+          const brand = product.brands || "Unknown brand";
+          const nutrients = product.nutriments || {};
+
+          openFoodContainer.innerHTML += `
+            <div class="card">
+              <img src="${image}" alt="${name}" />
+              <div class="card-content">
+                <h4>${name}</h4>
+                <p><strong>${brand}</strong></p>
+                <p><em>Why this food?</em> High in ${nutrient.replace("_", " ")}, great for when you're feeling <strong>${mood}</strong>.</p>
+                <p style="font-size: 0.85rem; color: #888;">Energy: ${nutrients.energy || "?"} kcal | Sugar: ${nutrients.sugars || "?"}g</p>
+              </div>
+            </div>
+          `;
+        });
+      } catch (err) {
+        openFoodContainer.innerHTML = `<p>Error loading smart foods: ${err.message}</p>`;
+      }
+    });
+
+    // Toggle settings menu
+    const settingsBtn = document.getElementById("settingsBtn");
+    const settingsMenu = document.getElementById("settingsMenu");
+
+    settingsBtn.addEventListener("click", () => {
+      settingsMenu.classList.toggle("hidden");
+    });
+
+    // Logout
+    const logoutBtn = document.getElementById("logoutBtn");
+    logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "login.html";
     });
   </script>
-  
 </body>
 </html>

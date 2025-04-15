@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile - GoodMoodFood</title>
+  <link rel="stylesheet" href="../styles/main.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: #f9f9f9;
+      color: #333;
+    }
+
+    header {
+      background-color: #000;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 30px auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #ff6f61;
+      margin-bottom: 20px;
+    }
+
+    .profile-info {
+      margin-bottom: 30px;
+    }
+
+    .profile-info p {
+      font-size: 1.1rem;
+      margin: 10px 0;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .actions a {
+      background-color: #ff6f61;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+
+    .actions a:hover {
+      background-color: #e55447;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: #222;
+      color: white;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Your Profile</h1>
+  </header>
+
+  <div class="container">
+    <h2>Welcome, <span id="userEmail">Loading...</span></h2>
+
+    <div class="profile-info">
+      <p><strong>Email:</strong> <span id="emailInfo"></span></p>
+      <p><strong>Joined:</strong> <span id="createdAt"></span></p>
+      <p><strong>Preferences completed:</strong> <span id="profileStatus"></span></p>
+    </div>
+
+    <div class="actions">
+      <a href="dashboard.html">🏠 Back to Dashboard</a>
+      <a href="questionnaire.html">⚙️ Update Preferences</a>
+      <a href="orders.html">🧾 View Recent Orders</a>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2024 GoodMoodFood. All rights reserved.
+  </footer>
+
+  <script type="module">
+    import { app } from "../firebase-config.js";
+    import {
+      getAuth,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      getDoc
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const userEmail = document.getElementById("userEmail");
+        const emailInfo = document.getElementById("emailInfo");
+        const createdAt = document.getElementById("createdAt");
+        const profileStatus = document.getElementById("profileStatus");
+
+        userEmail.textContent = user.email;
+        emailInfo.textContent = user.email;
+
+        const userRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userRef);
+
+        if (userSnap.exists()) {
+          const data = userSnap.data();
+          const joinedDate = data.createdAt?.toDate().toLocaleDateString() || "Unknown";
+          const status = data.completedProfile ? "✅ Yes" : " No";
+
+          createdAt.textContent = joinedDate;
+          profileStatus.textContent = status;
+        } else {
+          profileStatus.textContent = " Not found";
+        }
+      } else {
+        window.location.href = "login.html";
+      }
+    });
+  </script>
+</body>
+</html>

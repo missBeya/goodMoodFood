@@ -190,48 +190,45 @@
 
   <!-- Firebase Auth Logic -->
   <script type="module">
-    import app from '../firebase-congig.js';
     import { auth, db } from '../firebase-config.js';
-    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
+    import {
+      createUserWithEmailAndPassword,
+      sendEmailVerification
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  
     document.getElementById('signupForm').addEventListener('submit', async (e) => {
       e.preventDefault();
+  
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
-
+  
       try {
         const userCred = await createUserWithEmailAndPassword(auth, email, password);
-        const uid = userCred.user.uid;
-
-        await setDoc(doc(db, "users", uid), {
+        const user = userCred.user;
+  
+        await sendEmailVerification(user);
+        alert("A verification email has been sent. Please check your inbox.");
+  
+        await setDoc(doc(db, "users", user.uid), {
           email: email,
           createdAt: new Date(),
           completedProfile: false
         });
-
-        Console.log("UID:",uid)
-        window.location.href = "questionnaire.html";
+  
+        window.location.href = "verify.html";
+  
       } catch (err) {
-        alert("Error: " + err.message);
+        if (err.code === "auth/email-already-in-use") {
+          alert("You already have an account! Redirecting you to login...");
+          window.location.href = "login.html";
+        } else {
+          alert("Signup error: " + err.message);
+        }
       }
     });
   </script>
-
-  <!-- Slideshow Script -->
-  <script>
-    let slides = document.querySelectorAll('.background-slideshow .slide');
-    let current = 0;
-
-    setInterval(() => {
-      slides[current].classList.remove('active');
-      current = (current + 1) % slides.length;
-      slides[current].classList.add('active');
-    }, 4000);
-  </script>
-
+  
+  
 </body>
 </html>

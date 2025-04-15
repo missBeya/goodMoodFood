@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login - GoodMoodFood</title>
-  <link rel="stylesheet" href="../public/styles/main.css"> <!-- Adjust path if needed -->
+  <link rel="stylesheet" href="../public/styles/main.css">
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -96,6 +96,13 @@
       text-decoration: underline;
     }
 
+    #error-msg {
+      color: red;
+      text-align: center;
+      margin-top: 10px;
+      font-size: 0.95rem;
+    }
+
     footer {
       background-color: #222;
       color: #eee;
@@ -125,6 +132,8 @@
         <input type="submit" value="Login" />
       </form>
 
+      <div id="error-msg"></div>
+
       <div class="alt-option">
         <p>Don't have an account? <a href="register.html">Register here</a></p>
       </div>
@@ -135,25 +144,33 @@
     <p>&copy; 2024 GoodMoodFood. All rights reserved.</p>
   </footer>
 
-  <<script type="module">
+  <script type="module">
     import { loginUser } from '../scripts/auth.js';
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-    import app from '../firebase-config.js'; // adjust path if needed
-  
+    import { app } from '../firebase-config.js';
+
     const db = getFirestore(app);
     const form = document.getElementById('loginForm');
-  
+    const errorMsg = document.getElementById('error-msg');
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      errorMsg.textContent = ""; // Clear old messages
+
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
-  
+
       try {
         const user = await loginUser(email, password);
+
+        if (!user.emailVerified) {
+          errorMsg.textContent = "Please verify your email before logging in.";
+          return;
+        }
+
         const uid = user.uid;
-  
         const userDoc = await getDoc(doc(db, "users", uid));
-  
+
         if (userDoc.exists()) {
           const data = userDoc.data();
           if (data.completedProfile) {
@@ -162,14 +179,23 @@
             window.location.href = "questionnaire.html";
           }
         } else {
-          alert("User data not found.");
+          errorMsg.textContent = "User data not found.";
         }
-  
-      } catch (error) {
-        alert("Error: " + error.message);
-      }
+
+      } 
+      catch (error) {
+  if (error.code === "auth/wrong-password") {
+    errorMsg.textContent = "Incorrect password. Please try again.";
+  } else if (error.code === "auth/user-not-found") {
+    errorMsg.textContent = "No account found for that email.";
+  } else if (error.code === "auth/too-many-requests") {
+    errorMsg.textContent = "Too many attempts. Please wait or reset your password.";
+  } else {
+    errorMsg.textContent = "Login error: " + error.message;
+  }
+}
+
     });
   </script>
-  
 </body>
 </html>
