@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Science-Based Meals</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: #fdfdfd;
+      margin: 0;
+    }
+
+    button {
+      padding: 12px 20px;
+      font-size: 1rem;
+      background-color: #ff6f61;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #e55447;
+    }
+
+    #status {
+      margin-top: 20px;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <h2>Add Science-Based Meals to Firestore</h2>
+  <button id="addMealsBtn">Add Meals</button>
+  <div id="status"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+  apiKey: "AIzaSyDTiLV8wLyZQc0W-YzdWQGooZq2KFoU00w",
+  authDomain: "goodmoodfood-84f7b.firebaseapp.com",
+  projectId: "goodmoodfood-84f7b",
+  storageBucket: "goodmoodfood-84f7b.appspot.com",
+  messagingSenderId: "715419127474",
+  appId: "1:715419127474:web:6e86fbb1465bad30df83ab",
+};
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const sampleMeals = [
+  {
+    name: "Grilled Salmon Power Bowl",
+    restaurant: "Omega Bistro",
+    image: "https://source.https://images.pexels.com/photos/262959/pexels-photo-262959.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2.com/featured/?salmon,bowl",
+    location: "Hull",
+    moods: ["Sad", "Focused"],
+    cuisine: "Mediterranean",
+    tags: ["omega-3", "anti-inflammatory", "brain-boosting"],
+    nutritionNote: "Rich in omega-3 fatty acids to improve mood and enhance cognitive function. Ideal for lifting spirits and staying mentally sharp.",
+    price: "£9.95",
+    contains: ["fish"],
+    dietType: "omnivore"
+  },
+  {
+    name: "Spinach & Quinoa Super Salad",
+    restaurant: "Vital Greens",
+    image: "https://source.https://images.pexels.com/photos/7994668/pexels-photo-7994668.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2.com/featured/?spinach,quinoa,salad",
+    location: "Hull",
+    moods: ["Tired", "Stressed"],
+    cuisine: "Vegan",
+    tags: ["magnesium", "iron", "fiber-rich"],
+    nutritionNote: "Packed with iron and magnesium to fight fatigue, support oxygen flow, and help regulate your nervous system.",
+    price: "£7.25",
+    contains: ["soy"],
+    dietType: "vegan"
+  },
+  {
+    name: "Dark Chocolate Berry Bowl",
+    restaurant: "MoodFuel Market",
+    image: "https://https://images.pexels.com/photos/1343504/pexels-photo-1343504.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2.unsplash.com/featured/?darkchocolate,berries,bowl",
+    location: "Hull",
+    moods: ["Sad", "Romantic"],
+    cuisine: "American",
+    tags: ["serotonin-boost", "antioxidants", "iron"],
+    nutritionNote: "Dark chocolate and berries provide antioxidants and natural serotonin support, making this bowl perfect for emotional uplift.",
+    price: "£5.10",
+    contains: ["dairy"],
+    dietType: "vegetarian"
+  },
+  {
+    name: "Spiced Lentil & Sweet Potato Stew",
+    restaurant: "Root & Soul",
+    image: "https://source.https://images.pexels.com/photos/1618952/pexels-photo-1618952.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2.com/featured/?lentil,sweetpotato,stew",
+    location: "Hull",
+    moods: ["Unwell", "Tired"],
+    cuisine: "Indian",
+    tags: ["immune-support", "iron", "comforting"],
+    nutritionNote: "Rich in plant-based iron and vitamin A to support immune health and soothe the body during illness.",
+    price: "£6.75",
+    contains: [],
+    dietType: "vegan"
+  },
+  {
+    name: "Avocado Toast with Poached Egg & Chia",
+    restaurant: "Morning Mood",
+    image: "https://source.unsplash.com/feathttps://images.pexels.com/photos/30336930/pexels-photo-30336930/free-photo-of-delicious-avocado-egg-toast-with-fresh-salad.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2ured/?avocado,toast,egg",
+    location: "Hull",
+    moods: ["Focused", "Happy"],
+    cuisine: "British",
+    tags: ["healthy fats", "fiber", "omega-3"],
+    nutritionNote: "A balance of healthy fats and brain-boosting nutrients to support stable energy and mental clarity.",
+    price: "£6.20",
+    contains: ["eggs", "gluten"],
+    dietType: "vegetarian"
+  },
+  {
+    name: "Zesty Tuna & Chickpea Wrap",
+    restaurant: "WrapWell",
+    image: "https://source.https://images.pexels.com/photos/6546022/pexels-photo-6546022.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2.com/featured/?tuna,wrap,chickpea",
+    location: "Hull",
+    moods: ["Stressed", "Focused"],
+    cuisine: "Mediterranean",
+    tags: ["protein", "B-vitamins", "omega-3"],
+    nutritionNote: "Tuna and chickpeas provide protein and B-vitamins to manage stress and enhance focus under pressure.",
+    price: "£6.95",
+    contains: ["fish", "gluten"],
+    dietType: "omnivore"
+  },
+  {
+    name: "Vitamin C Immunity Smoothie",
+    restaurant: "JuiceLab",
+    image: "https://source.https://images.pexels.com/photos/4443444/pexels-photo-4443444.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2.com/featured/?orange,kiwi,smoothie",
+    location: "Hull",
+    moods: ["Unwell", "Sad"],
+    cuisine: "Vegan",
+    tags: ["vitamin_c", "hydrating", "immune-support"],
+    nutritionNote: "Packed with citrus fruits and kiwi to boost vitamin C levels and support immune defense during down days.",
+    price: "£4.85",
+    contains: [],
+    dietType: "vegan"
+  },
+  {
+    name: "Hearty Mushroom Barley Bowl",
+    restaurant: "Earthly Delights",
+    image: "https://https://images.pexels.com/photos/7538074/pexels-photo-7538074.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2.unsplash.com/featured/?mushroom,barley,bowl",
+    location: "Hull",
+    moods: ["Stressed", "Tired"],
+    cuisine: "Middle Eastern",
+    tags: ["selenium", "fiber", "adaptogens"],
+    nutritionNote: "Mushrooms provide selenium and adaptogens to support adrenal health and emotional stability.",
+    price: "£7.60",
+    contains: ["gluten"],
+    dietType: "vegan"
+  },
+  {
+    name: "Sweet Potato & Black Bean Taco",
+    restaurant: "Taco Roots",
+    image: "https://source.unsplashhttps://images.pexels.com/photos/7613558/pexels-photo-7613558.jpeg?auto=compress&cs=tinysrgb&w=1200&lazy=load.com/featured/?taco,sweetpotato,blackbean",
+    location: "Hull",
+    moods: ["Happy", "Romantic"],
+    cuisine: "Mexican",
+    tags: ["iron", "zinc", "antioxidants"],
+    nutritionNote: "This iron-rich combo enhances blood flow and energy, making it ideal for joyful or affectionate moments.",
+    price: "£5.50",
+    contains: ["gluten"],
+    dietType: "vegan"
+  },
+  {
+    name: "Oats & Berry Mood Boost Bowl",
+    restaurant: "Calm Cravings",
+    image: "httpshttps://images.pexels.com/photos/7727477/pexels-photo-7727477.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2://source.unsplash.com/featured/?oats,berries,bowl",
+    location: "Hull",
+    moods: ["Sad", "Stressed"],
+    cuisine: "British",
+    tags: ["fiber", "magnesium", "slow-release energy"],
+    nutritionNote: "Oats and berries combine to stabilize blood sugar and boost serotonin production naturally.",
+    price: "£4.90",
+    contains: ["gluten"],
+    dietType: "vegan"
+  },
+  {
+  name: "Miso Tofu Brain Boost Bowl",
+  restaurant: "Zen Roots",
+  image: "https://source.https://images.pexels.com/photos/16068667/pexels-photo-16068667/free-photo-of-a-bowl-of-ramen-with-meat-and-eggs.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2.com/featured/?miso,tofu,bowl",
+  location: "Hull",
+  moods: ["Focused", "Tired"],
+  cuisine: "Asian",
+  tags: ["omega-3", "B-vitamins", "protein"],
+  nutritionNote: "Tofu and miso offer B-vitamins and plant protein to support sustained focus and reduce mental fatigue.",
+  price: "£6.45",
+  contains: ["soy"],
+  dietType: "vegan"
+},
+{
+  name: "Mediterranean Chickpea Platter",
+  restaurant: "Hummus House",
+  image: "https://source.unshttps://images.pexels.com/photos/6252726/pexels-photo-6252726.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2plash.com/featured/?chickpeas,mediterranean",
+  location: "Hull",
+  moods: ["Stressed", "Happy"],
+  cuisine: "Mediterranean",
+  tags: ["magnesium", "fiber", "antioxidants"],
+  nutritionNote: "This colorful plate of fiber and magnesium-rich foods helps reduce stress and improve your mood naturally.",
+  price: "£7.10",
+  contains: [],
+  dietType: "vegan"
+},
+{
+  name: "Zinc-Rich Mushroom Stir Fry",
+  restaurant: "Green Spoon",
+  image: "https://source.unsplash.com/https://images.pexels.com/photos/4518699/pexels-photo-4518699.jpeg?auto=compress&cs=tinysrgb&w=1200featured/?mushroom,stirfry",
+  location: "Hull",
+  moods: ["Romantic", "Focused"],
+  cuisine: "Asian",
+  tags: ["zinc", "selenium", "antioxidants"],
+  nutritionNote: "Mushrooms provide minerals and antioxidants that support brain clarity and promote emotional connection.",
+  price: "£6.75",
+  contains: ["soy"],
+  dietType: "vegan"
+},
+{
+  name: "Iron Boost Lentil Burger",
+  restaurant: "PlantBurger Co.",
+  image: "https://source.unshttps://images.pexels.com/photos/7837694/pexels-photo-7837694.jpeg?auto=compress&cs=tinysrgb&w=1200plash.com/featured/?lentil,burger",
+  location: "Hull",
+  moods: ["Tired", "Sad"],
+  cuisine: "American",
+  tags: ["iron", "protein", "energy"],
+  nutritionNote: "Lentils provide iron and plant-based protein, perfect for fighting fatigue and boosting energy.",
+  price: "£6.90",
+  contains: ["gluten"],
+  dietType: "vegan"
+},
+{
+  name: "Sweet Citrus Smoothie",
+  restaurant: "FreshBuzz",
+  image: "https://source.unsplash.com/fhttps://images.pexels.com/photos/4113138/pexels-photo-4113138.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2eatured/?smoothie,orange,banana",
+  location: "Hull",
+  moods: ["Unwell", "Sad"],
+  cuisine: "Vegan",
+  tags: ["vitamin_c", "hydrating", "immune-support"],
+  nutritionNote: "Refreshing and immune-supportive with citrus fruits and banana to help your body recover faster.",
+  price: "£4.30",
+  contains: [],
+  dietType: "vegan"
+},
+{
+  name: "Herby Chicken with Broccoli",
+  restaurant: "WholePlate",
+  image: "https://source.unsphttps://images.pexels.com/photos/5836775/pexels-photo-5836775.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2lash.com/featured/?chicken,broccoli,herbs",
+  location: "Hull",
+  moods: ["Focused", "Tired"],
+  cuisine: "British",
+  tags: ["protein", "B-vitamins", "fiber"],
+  nutritionNote: "This high-protein plate with B vitamins and broccoli helps maintain your energy and focus during busy days.",
+  price: "£8.40",
+  contains: [],
+  dietType: "omnivore"
+},
+{
+  name: "Peanut Tofu Protein Stir-Fry",
+  restaurant: "Noodle Mind",
+  image: "https://source.unsplash.com/featured/?tofu,peanut,noodles",
+  location: "Hull",
+  moods: ["Stressed", "Tired"],
+  cuisine: "Asian",
+  tags: ["protein", "magnesium", "iron"],
+  nutritionNote: "Peanuts and tofu are rich in protein and magnesium, calming the mind and supporting muscle recovery.",
+  price: "£6.80",
+  contains: ["peanuts", "soy"],
+  dietType: "vegan"
+},
+{
+  name: "Smoked Mackerel Omega Platter",
+  restaurant: "Fish & Glow",
+  image: "https://source.unsplashttps://images.pexels.com/photos/8250362/pexels-photo-8250362.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2h.com/featured/?mackerel,platter",
+  location: "Hull",
+  moods: ["Sad", "Focused"],
+  cuisine: "British",
+  tags: ["omega-3", "vitamin_d", "brain-support"],
+  nutritionNote: "Mackerel is a powerhouse of omega-3s and vitamin D, both key to lifting mood and sharpening focus.",
+  price: "£9.20",
+  contains: ["fish"],
+  dietType: "omnivore"
+},
+{
+  name: "Chia & Flax Power Porridge",
+  restaurant: "The Energy Kitchen",
+  image: "https://sourhttps://images.pexels.com/photos/27850095/pexels-photo-27850095/free-photo-of-oatmeal-with-berries-and-blackberries-on-a-wooden-table.jpeg?auto=compress&cs=tinysrgb&w=1200ce.unsplash.com/featured/?porridge,chia,flax",
+  location: "Hull",
+  moods: ["Happy", "Focused"],
+  cuisine: "Vegan",
+  tags: ["fiber", "omega-3", "slow-release energy"],
+  nutritionNote: "Packed with plant-based omega-3s and slow-digesting carbs to keep you energized and uplifted.",
+  price: "£4.60",
+  contains: ["gluten"],
+  dietType: "vegan"
+},
+{
+  name: "Stuffed Bell Peppers with Quinoa",
+  restaurant: "VeggieCore",
+  image: "https://source.https://images.pexels.com/photos/1640767/pexels-photo-1640767.jpeg?auto=compress&cs=tinysrgb&w=1200.com/featured/?quinoa,stuffedpeppers",
+  location: "Hull",
+  moods: ["Romantic", "Unwell"],
+  cuisine: "Mediterranean",
+  tags: ["zinc", "fiber", "immune-support"],
+  nutritionNote: "Colorful and rich in zinc and fiber, these peppers help build immunity and bring warmth to your mood.",
+  price: "£6.95",
+  contains: [],
+  dietType: "vegan"
+}
+
+];
+
+
+
+    document.getElementById("addMealsBtn").addEventListener("click", async () => {
+      const status = document.getElementById("status");
+      status.textContent = "Adding science-based meals...";
+      try {
+        const mealRef = collection(db, "meals");
+        for (const meal of sampleMeals) {
+          await addDoc(mealRef, meal);
+        }
+        status.textContent = "✅ Meals added with nutrition notes for science-based mood support!";
+      } catch (err) {
+        status.textContent = "Error: " + err.message;
+      }
+    });
+  </script>
+</body>
+</html>

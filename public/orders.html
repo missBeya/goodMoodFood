@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Recent Orders - GoodMoodFood</title>
+  <link rel="stylesheet" href="../styles/main.css"/>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #fdfdfd;
+      margin: 0;
+      color: #333;
+    }
+
+    header {
+      background-color: #000;
+      color: #fff;
+      text-align: center;
+      padding: 25px 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+
+    h2 {
+      color: #ff6f61;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .order-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+      padding: 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      transition: box-shadow 0.2s ease;
+    }
+
+    .order-card:hover {
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    }
+
+    .order-card img {
+      width: 120px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .order-details {
+      flex: 1;
+    }
+
+    .order-details h4 {
+      margin: 0 0 5px;
+    }
+
+    .order-details p {
+      font-size: 0.95rem;
+      color: #666;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: #222;
+      color: white;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Your Recent Orders</h1>
+    <p>Here's a look at what you've been enjoying!</p>
+  </header>
+
+  <div class="container" id="ordersContainer">
+    <!-- Orders will be inserted here -->
+  </div>
+
+  <footer>
+    &copy; 2024 GoodMoodFood. All rights reserved.
+  </footer>
+
+  <script type="module">
+    import { app } from "../firebase-config.js";
+    import {
+      getAuth,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      query,
+      where,
+      getDocs
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    const ordersContainer = document.getElementById("ordersContainer");
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      try {
+        const q = query(collection(db, "orders"), where("userId", "==", user.uid));
+        const snapshot = await getDocs(q);
+
+        if (snapshot.empty) {
+          ordersContainer.innerHTML = "<p style='text-align:center;'>You haven’t made any orders yet. Go grab a mood-boosting bite!</p>";
+        } else {
+          snapshot.forEach(doc => {
+            const order = doc.data();
+            ordersContainer.innerHTML += `
+              <div class="order-card">
+                <img src="${order.image}" alt="${order.name}" />
+                <div class="order-details">
+                  <h4>${order.name}</h4>
+                  <p><strong>Restaurant:</strong> ${order.restaurant}</p>
+                  <p><strong>Price:</strong> ${order.price}</p>
+                  <p><strong>Ordered on:</strong> ${new Date(order.timestamp?.toDate()).toLocaleDateString()}</p>
+                </div>
+              </div>
+            `;
+          });
+        }
+      } catch (err) {
+        ordersContainer.innerHTML = `<p style='color:red;text-align:center;'>Error loading orders: ${err.message}</p>`;
+      }
+    });
+  </script>
+</body>
+</html>

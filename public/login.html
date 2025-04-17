@@ -145,56 +145,72 @@
   </footer>
 
   <script type="module">
-    import { loginUser } from '../scripts/auth.js';
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-    import { app } from '../firebase-config.js';
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import {
+      getAuth,
+      signInWithEmailAndPassword
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      getDoc
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+    const firebaseConfig = {
+      apiKey: "AIzaSyDTiLV8wLyZQc0W-YzdWQGooZq2KFoU00w",
+      authDomain: "goodmoodfood-84f7b.firebaseapp.com",
+      projectId: "goodmoodfood-84f7b",
+      storageBucket: "goodmoodfood-84f7b.appspot.com",
+      messagingSenderId: "715419127474",
+      appId: "1:715419127474:web:6e86fbb1465bad30df83ab"
+};
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
     const db = getFirestore(app);
-    const form = document.getElementById('loginForm');
-    const errorMsg = document.getElementById('error-msg');
 
-    form.addEventListener('submit', async (e) => {
+    const form = document.getElementById("loginForm");
+    const errorMsg = document.getElementById("error-msg");
+
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      errorMsg.textContent = ""; // Clear old messages
+      errorMsg.textContent = "";
 
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
 
       try {
-        const user = await loginUser(email, password);
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
 
         if (!user.emailVerified) {
           errorMsg.textContent = "Please verify your email before logging in.";
           return;
         }
 
-        const uid = user.uid;
-        const userDoc = await getDoc(doc(db, "users", uid));
+        const userDoc = await getDoc(doc(db, "users", user.uid));
 
         if (userDoc.exists()) {
           const data = userDoc.data();
-          if (data.completedProfile) {
-            window.location.href = "dashboard.html";
-          } else {
-            window.location.href = "questionnaire.html";
-          }
+          window.location.href = data.completedProfile ? "dashboard.html" : "questionnaire.html";
         } else {
           errorMsg.textContent = "User data not found.";
         }
-
-      } 
-      catch (error) {
-  if (error.code === "auth/wrong-password") {
-    errorMsg.textContent = "Incorrect password. Please try again.";
-  } else if (error.code === "auth/user-not-found") {
-    errorMsg.textContent = "No account found for that email.";
-  } else if (error.code === "auth/too-many-requests") {
-    errorMsg.textContent = "Too many attempts. Please wait or reset your password.";
-  } else {
-    errorMsg.textContent = "Login error: " + error.message;
-  }
-}
-
+      } catch (error) {
+        switch (error.code) {
+          case "auth/wrong-password":
+            errorMsg.textContent = "Incorrect password. Please try again.";
+            break;
+          case "auth/user-not-found":
+            errorMsg.textContent = "No account found for that email.";
+            break;
+          case "auth/too-many-requests":
+            errorMsg.textContent = "Too many attempts. Please wait or reset your password.";
+            break;
+          default:
+            errorMsg.textContent = "Login error: " + error.message;
+        }
+      }
     });
   </script>
 </body>

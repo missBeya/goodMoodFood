@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dashboard - GoodMoodFood</title>
   <link rel="stylesheet" href="../styles/main.css" />
   <style>
@@ -11,14 +11,26 @@
       margin: 0;
       background: #fdfdfd;
       color: #333;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    body.dark-mode {
+      background: #1e1e1e;
+      color: #eee;
     }
 
     header {
       background-color: #000;
       color: #fff;
       padding: 20px;
-      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       position: relative;
+    }
+
+    header img {
+      height: 50px;
     }
 
     .settings-container {
@@ -27,12 +39,13 @@
       right: 20px;
     }
 
-    #settingsBtn {
+    #settingsBtn, #darkModeToggle {
       background: none;
       border: none;
       font-size: 1.5rem;
       cursor: pointer;
       color: #fff;
+      margin-left: 10px;
     }
 
     .dropdown-menu {
@@ -72,20 +85,9 @@
       padding: 20px;
     }
 
-    .welcome-section {
-      text-align: center;
-      margin-top: 20px;
-    }
-
-    .welcome-section h2 {
-      color: #ff6f61;
-      font-size: 2.2rem;
-      margin-bottom: 10px;
-    }
-
     .mood-section {
-      margin: 30px 0;
       text-align: center;
+      margin-top: 30px;
     }
 
     select, button {
@@ -108,12 +110,22 @@
       background-color: #e55447;
     }
 
-    .cards {
+    .cards, .carousel {
       display: flex;
       flex-wrap: wrap;
       gap: 20px;
       justify-content: center;
       margin-top: 20px;
+    }
+
+    .carousel {
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+    }
+
+    .carousel .card {
+      flex: 0 0 auto;
+      scroll-snap-align: center;
     }
 
     .card {
@@ -123,6 +135,7 @@
       width: 300px;
       overflow: hidden;
       transition: transform 0.2s ease;
+      cursor: pointer;
     }
 
     .card:hover {
@@ -156,32 +169,80 @@
       color: white;
       margin-top: 40px;
     }
+
+    /* Modal Styling */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.5);
+    }
+
+    .modal-content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 400px;
+      text-align: center;
+      position: relative;
+    }
+
+    .modal-content img {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+
+    .modal-content h4 {
+      margin: 10px 0 5px;
+    }
+
+    .modal-content p {
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    .modal button {
+      margin-top: 15px;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 1.5rem;
+      border: none;
+      background: none;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
   <header>
-    <h1>GoodMoodFood</h1>
-    <p>Welcome back! Discover food that matches your mood, here in Hull 🇬🇧</p>
+    <img src="../assets/logo.png" alt="GoodMoodFood Logo" />
+    <h1 style="flex: 1; text-align: center;">GoodMoodFood</h1>
 
-    <!-- Settings Dropdown -->
     <div class="settings-container">
+      <button id="darkModeToggle">🌓</button>
       <button id="settingsBtn" title="Settings">⚙️</button>
       <div id="settingsMenu" class="dropdown-menu hidden">
-        <a href="profile.html">👤 View Profile</a>
-        <a href="orders.html">🧾 Recent Orders</a>
+        <a href="profile.html">View Profile</a>
+        <a href="orders.html">Recent Orders</a>
         <a href="questionnaire.html">⚙️ Update Preferences</a>
-        <a href="#" id="logoutBtn">🚪 Logout</a>
+        <a href="#" id="logoutBtn">Logout</a>
       </div>
     </div>
   </header>
 
   <div class="container">
-    <section class="welcome-section">
-      <h2>Hello, <span id="userEmail">User</span>!</h2>
-    </section>
-
     <section class="mood-section">
-      <h3>Select How You're Feeling Today</h3>
+      <h3>How are you feeling today?</h3>
       <select id="mood">
         <option value="happy">😊 Happy</option>
         <option value="sad">😞 Sad</option>
@@ -195,23 +256,36 @@
     </section>
 
     <section>
+      <h3>My Top Picks</h3>
+      <div class="carousel" id="top-picks"></div>
+    </section>
+
+    <section>
       <h3>Featured Restaurants in Hull</h3>
-      <div class="cards" id="results">
-        <!-- Firestore meal cards -->
-      </div>
+      <div class="cards" id="results"></div>
     </section>
 
     <section>
       <h3>Smart Nutrition-Based Suggestions</h3>
-      <div class="cards" id="openfood-results">
-        <!-- Open Food Facts cards -->
-      </div>
+      <div class="cards" id="openfood-results"></div>
     </section>
   </div>
 
   <footer>
     &copy; 2024 GoodMoodFood. All rights reserved.
   </footer>
+
+  <!-- MODAL -->
+  <div id="foodModal" class="modal">
+    <div class="modal-content">
+      <button class="close-btn" id="closeModal">&times;</button>
+      <img id="modalImage" src="" alt="Food Image"/>
+      <h4 id="modalTitle"></h4>
+      <p id="modalRestaurant"></p>
+      <p id="modalNutritionNote"></p>
+      <button id="proceedToOrder">Proceed to Order</button>
+    </div>
+  </div>
 
   <script type="module">
     import { app } from "../firebase-config.js";
@@ -223,22 +297,108 @@
     import {
       getFirestore,
       collection,
+      getDocs,
+      doc,
+      getDoc,
       query,
-      where,
-      getDocs
+      where
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    const displayNameSpan = document.getElementById("displayName");
     const moodSelect = document.getElementById("mood");
     const findFoodBtn = document.getElementById("findBtn");
     const localContainer = document.getElementById("results");
     const openFoodContainer = document.getElementById("openfood-results");
+    const topPicksContainer = document.getElementById("top-picks");
+
+    const foodModal = document.getElementById("foodModal");
+    const modalImage = document.getElementById("modalImage");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalRestaurant = document.getElementById("modalRestaurant");
+    const modalNutritionNote = document.getElementById("modalNutritionNote");
+    const closeModal = document.getElementById("closeModal");
+    const proceedToOrder = document.getElementById("proceedToOrder");
+
+    const settingsBtn = document.getElementById("settingsBtn");
+    const settingsMenu = document.getElementById("settingsMenu");
+    settingsBtn.addEventListener("click", () => settingsMenu.classList.toggle("hidden"));
+
+    const logoutBtn = document.getElementById("logoutBtn");
+    logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "login.html";
+    });
+
+    // Dark mode toggle
+    document.getElementById("darkModeToggle").addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+    });
+
+    // Close modal
+    closeModal.addEventListener("click", () => {
+      foodModal.style.display = "none";
+    });
+
+    proceedToOrder.addEventListener("click", () => {
+      alert("Order placed! 🎉 We'll add real ordering soon.");
+      foodModal.style.display = "none";
+    });
+
+    function attachCardClick(cardElement, meal) {
+      cardElement.addEventListener("click", () => {
+        modalImage.src = meal.image;
+        modalTitle.textContent = meal.name;
+        modalRestaurant.textContent = `From ${meal.restaurant}`;
+        modalNutritionNote.textContent = meal.nutritionNote || "A delicious choice for your mood!";
+        foodModal.style.display = "flex";
+      });
+    }
+
+    function renderMealCard(meal, container) {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <img src="${meal.image}" alt="${meal.name}" />
+        <div class="card-content">
+          <h4>${meal.name}</h4>
+          <p><strong>${meal.restaurant}</strong></p>
+          <p>${meal.tags?.join(", ") || ""}</p>
+        </div>
+      `;
+      attachCardClick(card, meal);
+      container.appendChild(card);
+    }
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {
-        document.getElementById("userEmail").textContent = user.email;
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          const prefs = userDoc.data().preferences || {};
+          const allergies = prefs.allergies || [];
+          const intolerance = prefs.intolerance || [];
+          const dietType = prefs.dietType || "omnivore";
+
+          const mealSnap = await getDocs(collection(db, "meals"));
+          const safeMeals = [];
+
+          mealSnap.forEach((doc) => {
+            const meal = doc.data();
+            const contains = meal.contains || [];
+            const isSafe = !contains.some(i => allergies.includes(i) || intolerance.includes(i)) &&
+              (!meal.dietType || meal.dietType === dietType);
+            if (isSafe) safeMeals.push(meal);
+          });
+
+          topPicksContainer.innerHTML = "";
+          if (safeMeals.length) {
+            safeMeals.forEach(meal => renderMealCard(meal, topPicksContainer));
+          } else {
+            topPicksContainer.innerHTML = "<p>No meals match your preferences. Try updating them.</p>";
+          }
+        }
       } else {
         window.location.href = "login.html";
       }
@@ -249,34 +409,33 @@
       localContainer.innerHTML = "<p>Loading local suggestions...</p>";
       openFoodContainer.innerHTML = "<p>Loading smart suggestions...</p>";
 
-      // Firestore local meals
       try {
+        const user = auth.currentUser;
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        const prefs = userDoc.data().preferences || {};
+        const allergies = prefs.allergies || [];
+        const intolerance = prefs.intolerance || [];
+        const dietType = prefs.dietType || "omnivore";
+
         const q = query(collection(db, "meals"), where("moods", "array-contains", mood));
         const querySnapshot = await getDocs(q);
+        const filteredMeals = [];
 
-        if (querySnapshot.empty) {
-          localContainer.innerHTML = "<p>No local meals found for this mood.</p>";
-        } else {
-          localContainer.innerHTML = "";
-          querySnapshot.forEach((doc) => {
-            const meal = doc.data();
-            localContainer.innerHTML += `
-              <div class="card">
-                <img src="${meal.image}" alt="${meal.name}" />
-                <div class="card-content">
-                  <h4>${meal.name}</h4>
-                  <p><strong>${meal.restaurant}</strong> – ${meal.price}</p>
-                  <p>${meal.tags?.join(", ") || ""}</p>
-                </div>
-              </div>
-            `;
-          });
-        }
+        querySnapshot.forEach(doc => {
+          const meal = doc.data();
+          const contains = meal.contains || [];
+          const isSafe = !contains.some(i => allergies.includes(i) || intolerance.includes(i)) &&
+            (!meal.dietType || meal.dietType === dietType);
+          if (isSafe) filteredMeals.push(meal);
+        });
+
+        localContainer.innerHTML = "";
+        filteredMeals.forEach(meal => renderMealCard(meal, localContainer));
       } catch (err) {
-        localContainer.innerHTML = `<p>Error loading local meals: ${err.message}</p>`;
+        localContainer.innerHTML = `<p>Error loading meals: ${err.message}</p>`;
       }
 
-      // Open Food Facts suggestions
+      // OpenFoodFacts
       const moodToNutrient = {
         tired: "vitamin_b12",
         stressed: "magnesium",
@@ -288,7 +447,6 @@
       };
 
       const nutrient = moodToNutrient[mood.toLowerCase()] || "vitamin_c";
-
       const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${nutrient}&search_simple=1&action=process&json=1`;
 
       try {
@@ -296,50 +454,71 @@
         const data = await res.json();
         const results = data.products.slice(0, 6);
 
-        if (!results.length) {
-          openFoodContainer.innerHTML = "<p>No smart matches found for this mood.</p>";
-          return;
-        }
-
         openFoodContainer.innerHTML = "";
-
         results.forEach(product => {
-          const name = product.product_name || "Unnamed Food";
-          const image = product.image_url || "https://via.placeholder.com/300x180.png?text=No+Image";
-          const brand = product.brands || "Unknown brand";
-          const nutrients = product.nutriments || {};
-
-          openFoodContainer.innerHTML += `
-            <div class="card">
-              <img src="${image}" alt="${name}" />
-              <div class="card-content">
-                <h4>${name}</h4>
-                <p><strong>${brand}</strong></p>
-                <p><em>Why this food?</em> High in ${nutrient.replace("_", " ")}, great for when you're feeling <strong>${mood}</strong>.</p>
-                <p style="font-size: 0.85rem; color: #888;">Energy: ${nutrients.energy || "?"} kcal | Sugar: ${nutrients.sugars || "?"}g</p>
-              </div>
+          const div = document.createElement("div");
+          div.className = "card";
+          div.innerHTML = `
+            <img src="${product.image_url || 'https://via.placeholder.com/300x180'}" alt="${product.product_name}" />
+            <div class="card-content">
+              <h4>${product.product_name || "Unnamed Food"}</h4>
+              <p><strong>${product.brands || "Unknown Brand"}</strong></p>
+              <p><em>High in ${nutrient.replace("_", " ")}, ideal for feeling ${mood}</em></p>
             </div>
           `;
+          openFoodContainer.appendChild(div);
         });
       } catch (err) {
-        openFoodContainer.innerHTML = `<p>Error loading smart foods: ${err.message}</p>`;
+        openFoodContainer.innerHTML = `<p>Error fetching smart suggestions: ${err.message}</p>`;
       }
     });
+    // Mood to TheMealDB category mapping
+const moodToCategory = {
+  happy: "Dessert",
+  sad: "Comfort Food",
+  tired: "Breakfast",
+  romantic: "Seafood",
+  focused: "Beef",
+  sick: "Soup",
+  stressed: "Pasta"
+};
 
-    // Toggle settings menu
-    const settingsBtn = document.getElementById("settingsBtn");
-    const settingsMenu = document.getElementById("settingsMenu");
+findFoodBtn.addEventListener("click", async () => {
+  const mood = moodSelect.value;
+  const category = moodToCategory[mood.toLowerCase()] || "Miscellaneous";
+  const mealDBContainer = document.getElementById("mealdb-results");
+  mealDBContainer.innerHTML = "<p>Loading meals from TheMealDB...</p>";
 
-    settingsBtn.addEventListener("click", () => {
-      settingsMenu.classList.toggle("hidden");
+  try {
+    const res = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?c=${encodeURIComponent(category)}`);
+    const data = await res.json();
+    const meals = data.meals.slice(0, 6); // Limit to 6 meals
+
+    mealDBContainer.innerHTML = "";
+    meals.forEach(meal => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <img src="${meal.strMealThumb}" alt="${meal.strMeal}" />
+        <div class="card-content">
+          <h4>${meal.strMeal}</h4>
+          <p><strong>Category:</strong> ${category}</p>
+        </div>
+      `;
+      card.addEventListener("click", () => {
+        modalImage.src = meal.strMealThumb;
+        modalTitle.textContent = meal.strMeal;
+        modalRestaurant.textContent = `Category: ${category}`;
+        modalNutritionNote.textContent = "A delightful choice from TheMealDB!";
+        foodModal.style.display = "flex";
+      });
+      mealDBContainer.appendChild(card);
     });
+  } catch (err) {
+    mealDBContainer.innerHTML = `<p>Error fetching meals from TheMealDB: ${err.message}</p>`;
+  }
+});
 
-    // Logout
-    const logoutBtn = document.getElementById("logoutBtn");
-    logoutBtn.addEventListener("click", async () => {
-      await signOut(auth);
-      window.location.href = "login.html";
-    });
   </script>
 </body>
 </html>

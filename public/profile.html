@@ -35,8 +35,21 @@
       margin-bottom: 20px;
     }
 
-    .profile-info {
-      margin-bottom: 30px;
+    .profile-image {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .profile-image img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #ff6f61;
+    }
+
+    .profile-image input {
+      margin-top: 10px;
     }
 
     .profile-info p {
@@ -44,11 +57,42 @@
       margin: 10px 0;
     }
 
+    .edit-form label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 600;
+    }
+
+    .edit-form input, .edit-form textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+
+    .edit-form button {
+      margin-top: 20px;
+      background-color: #ff6f61;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .edit-form button:hover {
+      background-color: #e55447;
+    }
+
     .actions {
       display: flex;
       justify-content: center;
       gap: 15px;
       flex-wrap: wrap;
+      margin-top: 30px;
     }
 
     .actions a {
@@ -82,11 +126,26 @@
   <div class="container">
     <h2>Welcome, <span id="userEmail">Loading...</span></h2>
 
+    <div class="profile-image">
+      <img id="avatar" src="https://via.placeholder.com/120" alt="Profile Image">
+      <input type="file" id="upload" accept="image/*">
+    </div>
+
     <div class="profile-info">
       <p><strong>Email:</strong> <span id="emailInfo"></span></p>
       <p><strong>Joined:</strong> <span id="createdAt"></span></p>
       <p><strong>Preferences completed:</strong> <span id="profileStatus"></span></p>
     </div>
+
+    <form class="edit-form" id="editForm">
+      <label for="displayName">Display Name</label>
+      <input type="text" id="displayName" placeholder="Your name..." />
+
+      <label for="goals">Your Food & Wellness Goals</label>
+      <textarea id="goals" rows="3" placeholder="e.g., Eat healthier, reduce sugar..."></textarea>
+
+      <button type="submit">💾 Save Changes</button>
+    </form>
 
     <div class="actions">
       <a href="dashboard.html">🏠 Back to Dashboard</a>
@@ -103,24 +162,41 @@
     import { app } from "../firebase-config.js";
     import {
       getAuth,
-      onAuthStateChanged
+      onAuthStateChanged,
+      updateProfile
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import {
       getFirestore,
       doc,
-      getDoc
+      getDoc,
+      updateDoc
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import {
+      getStorage,
+      ref,
+      uploadBytes,
+      getDownloadURL
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
     const auth = getAuth(app);
     const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    const userEmail = document.getElementById("userEmail");
+    const emailInfo = document.getElementById("emailInfo");
+    const createdAt = document.getElementById("createdAt");
+    const profileStatus = document.getElementById("profileStatus");
+    const avatar = document.getElementById("avatar");
+    const upload = document.getElementById("upload");
+    const editForm = document.getElementById("editForm");
+    const displayNameInput = document.getElementById("displayName");
+    const goalsInput = document.getElementById("goals");
+
+    let currentUserId = null;
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {
-        const userEmail = document.getElementById("userEmail");
-        const emailInfo = document.getElementById("emailInfo");
-        const createdAt = document.getElementById("createdAt");
-        const profileStatus = document.getElementById("profileStatus");
-
+        currentUserId = user.uid;
         userEmail.textContent = user.email;
         emailInfo.textContent = user.email;
 
@@ -130,16 +206,43 @@
         if (userSnap.exists()) {
           const data = userSnap.data();
           const joinedDate = data.createdAt?.toDate().toLocaleDateString() || "Unknown";
-          const status = data.completedProfile ? "✅ Yes" : " No";
+          const status = data.completedProfile ? "✅ Yes" : "❌ No";
 
           createdAt.textContent = joinedDate;
           profileStatus.textContent = status;
-        } else {
-          profileStatus.textContent = " Not found";
+          displayNameInput.value = data.displayName || "";
+          goalsInput.value = data.goals || "";
+
+          if (data.avatarUrl) avatar.src = data.avatarUrl;
         }
       } else {
         window.location.href = "login.html";
       }
+    });
+
+    editForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!currentUserId) return;
+
+      const userRef = doc(db, "users", currentUserId);
+      await updateDoc(userRef, {
+        displayName: displayNameInput.value,
+        goals: goalsInput.value
+      });
+      alert("Profile updated successfully!");
+    });
+
+    upload.addEventListener("change", async (e) => {
+      const file = e.target.files[0];
+      if (!file || !currentUserId) return;
+
+      const storageRef = ref(storage, `avatars/${currentUserId}`);
+      await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(storageRef);
+
+      avatar.src = url;
+      const userRef = doc(db, "users", currentUserId);
+      await updateDoc(userRef, { avatarUrl: url });
     });
   </script>
 </body>

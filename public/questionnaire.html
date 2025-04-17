@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Your Food Preferences - GoodMoodFood</title>
   <link rel="stylesheet" href="../styles/main.css" />
@@ -84,6 +84,22 @@
       background-color: #e55447;
     }
 
+    .confirmation {
+      display: none;
+      text-align: center;
+      padding: 30px;
+    }
+
+    .confirmation.active {
+      display: block;
+      animation: fadeIn 0.6s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     footer {
       text-align: center;
       padding: 20px;
@@ -106,7 +122,7 @@
     <p>Let us know your preferences to personalize your food journey 🍱</p>
   </header>
 
-  <div class="container">
+  <div class="container" id="formContainer">
     <h2>Your Food Preferences</h2>
     <p>We’ll use your answers to tailor smarter food suggestions just for you!</p>
 
@@ -128,6 +144,15 @@
           <label><input type="checkbox" name="intolerance" value="lactose"> Lactose</label>
           <label><input type="checkbox" name="intolerance" value="soy"> Soy</label>
           <label><input type="checkbox" name="intolerance" value="none"> None</label>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <label>What's your diet type?</label>
+        <div class="radio-group">
+          <label><input type="radio" name="dietType" value="omnivore" checked> Omnivore</label>
+          <label><input type="radio" name="dietType" value="vegetarian"> Vegetarian</label>
+          <label><input type="radio" name="dietType" value="vegan"> Vegan</label>
         </div>
       </div>
 
@@ -162,8 +187,29 @@
         </select>
       </div>
 
+      <div class="form-section">
+        <label>What's your favorite cuisine?</label>
+        <select id="cuisine">
+          <option value="none">I'm open to anything!</option>
+          <option value="italian">Italian</option>
+          <option value="thai">Thai</option>
+          <option value="japanese">Japanese</option>
+          <option value="indian">Indian</option>
+          <option value="mexican">Mexican</option>
+          <option value="british">British</option>
+          <option value="mediterranean">Mediterranean</option>
+          <option value="middleeastern">Middle Eastern</option>
+        </select>
+      </div>
+
       <input type="submit" value="Save My Preferences">
     </form>
+  </div>
+
+  <div class="confirmation" id="confirmationMessage">
+    <h2>🎉 Preferences Saved!</h2>
+    <p>You're all set. We're customizing your food experience based on your preferences.</p>
+    <p>Redirecting you to your dashboard...</p>
   </div>
 
   <footer>
@@ -171,43 +217,73 @@
   </footer>
 
   <script type="module">
-    import app from '../firebase-config.js';
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  
+    const firebaseConfig = {
+      apiKey: "AIzaSyDTiLV8wLyZQc0W-YzdWQGooZq2KFoU00w",
+      authDomain: "goodmoodfood-84f7b.firebaseapp.com",
+      projectId: "goodmoodfood-84f7b",
+      storageBucket: "goodmoodfood-84f7b.appspot.com",
+      messagingSenderId: "715419127474",
+      appId: "1:715419127474:web:6e86fbb1465bad30df83ab",
+      measurementId: "G-E0LW67CGBQ"
+    };
+  
+    const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const uid = localStorage.getItem("userUid");
-
+    const auth = getAuth(app);
+  
     function getCheckedValues(name) {
       return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(cb => cb.value);
     }
+  
+    const formContainer = document.getElementById("formContainer");
+    const confirmation = document.getElementById("confirmationMessage");
+  
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const uid = user.uid;
+  
+        document.getElementById("questionnaireForm").addEventListener("submit", async (e) => {
+          e.preventDefault();
+  
+          const allergies = getCheckedValues("allergies");
+const intolerance = getCheckedValues("intolerance");
+const lifestyle = document.getElementById("lifestyle").value;
+const budget = document.querySelector('input[name="budget"]:checked')?.value || "not_set";
+const foodPersonality = document.getElementById("foodPersonality").value;
+const cuisine = document.getElementById("cuisine").value;
 
-    document.getElementById("questionnaireForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const allergies = getCheckedValues("allergies");
-      const intolerance = getCheckedValues("intolerance");
-      const lifestyle = document.getElementById("lifestyle").value;
-      const budget = document.querySelector('input[name="budget"]:checked')?.value;
-      const foodPersonality = document.getElementById("foodPersonality").value;
-
-      try {
-        await updateDoc(doc(db, "users", uid), {
-          preferences: {
-            allergies,
-            intolerance,
-            lifestyle,
-            budget,
-            foodPersonality
-          },
-          completedProfile: true
+  
+          try {
+            await updateDoc(doc(db, "users", uid), {
+              preferences: {
+                allergies,
+                intolerance,
+                lifestyle,
+                budget,
+                foodPersonality,
+                favoriteCuisine: cuisine
+              },
+              completedProfile: true
+            });
+  
+            formContainer.style.display = "none";
+            confirmation.classList.add("active");
+  
+            setTimeout(() => {
+              window.location.href = "dashboard.html";
+            }, 3000);
+          } catch (error) {
+            alert("Error saving preferences: " + error.message);
+          }
         });
-
-        alert("Preferences saved successfully!");
-        window.location.href = "dashboard.html";
-      } catch (error) {
-        alert("Error saving preferences: " + error.message);
+      } else {
+        window.location.href = "login.html";
       }
     });
-  </script>
+  </script>  
 </body>
 </html>
