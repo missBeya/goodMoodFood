@@ -32,7 +32,7 @@
     h2 {
       text-align: center;
       color: #ff6f61;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
 
     .profile-image {
@@ -53,7 +53,7 @@
     }
 
     .profile-info p {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       margin: 10px 0;
     }
 
@@ -63,7 +63,8 @@
       font-weight: 600;
     }
 
-    .edit-form input, .edit-form textarea {
+    .edit-form input,
+    .edit-form textarea {
       width: 100%;
       padding: 10px;
       margin-top: 5px;
@@ -116,6 +117,11 @@
       color: white;
       margin-top: 40px;
     }
+
+    .highlight {
+      color: #ff6f61;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -124,7 +130,7 @@
   </header>
 
   <div class="container">
-    <h2>Welcome, <span id="userEmail">Loading...</span></h2>
+    <h2>Hello, <span id="userName">Friend</span> </h2>
 
     <div class="profile-image">
       <img id="avatar" src="https://via.placeholder.com/120" alt="Profile Image">
@@ -134,23 +140,26 @@
     <div class="profile-info">
       <p><strong>Email:</strong> <span id="emailInfo"></span></p>
       <p><strong>Joined:</strong> <span id="createdAt"></span></p>
-      <p><strong>Preferences completed:</strong> <span id="profileStatus"></span></p>
+      <p><strong>Preferences Completed:</strong> <span id="profileStatus"></span></p>
+      <p><strong>Diet Type:</strong> <span id="dietType">–</span></p>
+      <p><strong>Allergies:</strong> <span id="allergies">–</span></p>
+      <p><strong>Intolerances:</strong> <span id="intolerances">–</span></p>
     </div>
 
     <form class="edit-form" id="editForm">
       <label for="displayName">Display Name</label>
       <input type="text" id="displayName" placeholder="Your name..." />
 
-      <label for="goals">Your Food & Wellness Goals</label>
-      <textarea id="goals" rows="3" placeholder="e.g., Eat healthier, reduce sugar..."></textarea>
+      <label for="goals">Bio / Wellness Goals</label>
+      <textarea id="goals" rows="3" placeholder="e.g., I want to eat healthier, try more veggie meals..."></textarea>
 
-      <button type="submit">💾 Save Changes</button>
+      <button type="submit"> Save Changes</button>
     </form>
 
     <div class="actions">
-      <a href="dashboard.html">🏠 Back to Dashboard</a>
-      <a href="questionnaire.html">⚙️ Update Preferences</a>
-      <a href="orders.html">🧾 View Recent Orders</a>
+      <a href="dashboard.html"> Dashboard</a>
+      <a href="questionnaire.html"> Update Preferences</a>
+      <a href="orders.html"> Recent Orders</a>
     </div>
   </div>
 
@@ -162,8 +171,7 @@
     import { app } from "../firebase-config.js";
     import {
       getAuth,
-      onAuthStateChanged,
-      updateProfile
+      onAuthStateChanged
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import {
       getFirestore,
@@ -182,22 +190,24 @@
     const db = getFirestore(app);
     const storage = getStorage(app);
 
-    const userEmail = document.getElementById("userEmail");
+    const userName = document.getElementById("userName");
     const emailInfo = document.getElementById("emailInfo");
     const createdAt = document.getElementById("createdAt");
     const profileStatus = document.getElementById("profileStatus");
+    const dietType = document.getElementById("dietType");
+    const allergies = document.getElementById("allergies");
+    const intolerances = document.getElementById("intolerances");
     const avatar = document.getElementById("avatar");
     const upload = document.getElementById("upload");
-    const editForm = document.getElementById("editForm");
     const displayNameInput = document.getElementById("displayName");
     const goalsInput = document.getElementById("goals");
+    const editForm = document.getElementById("editForm");
 
     let currentUserId = null;
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         currentUserId = user.uid;
-        userEmail.textContent = user.email;
         emailInfo.textContent = user.email;
 
         const userRef = doc(db, "users", user.uid);
@@ -205,15 +215,18 @@
 
         if (userSnap.exists()) {
           const data = userSnap.data();
-          const joinedDate = data.createdAt?.toDate().toLocaleDateString() || "Unknown";
-          const status = data.completedProfile ? "✅ Yes" : "❌ No";
-
-          createdAt.textContent = joinedDate;
-          profileStatus.textContent = status;
+          userName.textContent = data.displayName || user.email;
           displayNameInput.value = data.displayName || "";
           goalsInput.value = data.goals || "";
+          createdAt.textContent = data.createdAt?.toDate().toLocaleDateString() || "Unknown";
+          profileStatus.textContent = data.completedProfile ? " Yes" : " No";
+          dietType.textContent = data.preferences?.dietType || "Not set";
+          allergies.textContent = (data.preferences?.allergies || []).join(", ") || "None";
+          intolerances.textContent = (data.preferences?.intolerance || []).join(", ") || "None";
 
-          if (data.avatarUrl) avatar.src = data.avatarUrl;
+          if (data.avatarUrl) {
+            avatar.src = data.avatarUrl;
+          }
         }
       } else {
         window.location.href = "login.html";
@@ -229,7 +242,7 @@
         displayName: displayNameInput.value,
         goals: goalsInput.value
       });
-      alert("Profile updated successfully!");
+      alert(" Profile updated successfully!");
     });
 
     upload.addEventListener("change", async (e) => {

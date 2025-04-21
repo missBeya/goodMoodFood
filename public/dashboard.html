@@ -225,16 +225,18 @@
 </head>
 <body>
   <header>
-    <img src="../assets/logo.png" alt="GoodMoodFood Logo" />
+    
     <h1 style="flex: 1; text-align: center;">GoodMoodFood</h1>
-
+    </div>
+    
     <div class="settings-container">
       <button id="darkModeToggle">🌓</button>
       <button id="settingsBtn" title="Settings">⚙️</button>
       <div id="settingsMenu" class="dropdown-menu hidden">
         <a href="profile.html">View Profile</a>
         <a href="orders.html">Recent Orders</a>
-        <a href="questionnaire.html">⚙️ Update Preferences</a>
+        <a href="questionnaire.html"> Update Preferences</a>
+        <a href="restaurant-panel.html" >Restaurant Panel</a>
         <a href="#" id="logoutBtn">Logout</a>
       </div>
     </div>
@@ -259,12 +261,33 @@
       <h3>My Top Picks</h3>
       <div class="carousel" id="top-picks"></div>
     </section>
-
+    <section class="filter-section" style="margin-bottom: 30px;">
+      <h3>Filter Meals</h3>
+      
+      <label for="filterDiet">Diet Type:</label>
+      <select id="filterDiet">
+        <option value="">Any</option>
+        <option value="omnivore">Omnivore</option>
+        <option value="vegetarian">Vegetarian</option>
+        <option value="vegan">Vegan</option>
+      </select>
+    
+      <label for="filterAllergens">Avoid Ingredients (comma-separated):</label>
+      <input type="text" id="filterAllergens" placeholder="e.g. nuts, dairy, soy" />
+    
+      <button id="applyFilters">Apply Filters</button>
+    </section>
+    
     <section>
       <h3>Featured Restaurants in Hull</h3>
       <div class="cards" id="results"></div>
     </section>
 
+    <section>
+      <h3>Meals from TheMealDB</h3>
+      <div class="cards" id="mealdb-results"></div>
+    </section>
+    
     <section>
       <h3>Smart Nutrition-Based Suggestions</h3>
       <div class="cards" id="openfood-results"></div>
@@ -299,21 +322,46 @@
       collection,
       getDocs,
       doc,
-      getDoc,
-      query,
-      where
+      getDoc
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
+  
     const auth = getAuth(app);
     const db = getFirestore(app);
-
-    const displayNameSpan = document.getElementById("displayName");
+  
     const moodSelect = document.getElementById("mood");
     const findFoodBtn = document.getElementById("findBtn");
     const localContainer = document.getElementById("results");
     const openFoodContainer = document.getElementById("openfood-results");
     const topPicksContainer = document.getElementById("top-picks");
+    const mealDBContainer = document.getElementById("mealdb-results");
+  
+    //
 
+    function applySmartFilters(meals, prefs, options) {
+  const { allergies, intolerance, dietType } = prefs;
+  const { useMood, mood, moodIngredients } = options;
+
+  return meals.filter(meal => {
+    const contains = meal.contains || [];
+    const ingredients = meal.ingredients || [];
+    
+    const hasAllergen = contains.some(c =>
+      allergies.includes(c.toLowerCase()) || intolerance.includes(c.toLowerCase())
+    );
+    if (hasAllergen) return false;
+
+    if (meal.dietType && dietType && meal.dietType !== dietType) return false;
+
+    if (useMood && moodIngredients?.length) {
+      const matchesMood = moodIngredients.some(ing =>
+        ingredients.includes(ing.toLowerCase())
+      );
+      if (!matchesMood) return false;
+    }
+
+    return true;
+  });
+}
     const foodModal = document.getElementById("foodModal");
     const modalImage = document.getElementById("modalImage");
     const modalTitle = document.getElementById("modalTitle");
@@ -321,32 +369,61 @@
     const modalNutritionNote = document.getElementById("modalNutritionNote");
     const closeModal = document.getElementById("closeModal");
     const proceedToOrder = document.getElementById("proceedToOrder");
-
+  
     const settingsBtn = document.getElementById("settingsBtn");
     const settingsMenu = document.getElementById("settingsMenu");
-    settingsBtn.addEventListener("click", () => settingsMenu.classList.toggle("hidden"));
-
+    const darkModeToggle = document.getElementById("darkModeToggle");
+  
+    settingsBtn.addEventListener("click", () => {
+      settingsMenu.classList.toggle("hidden");
+    });
+  
+    darkModeToggle.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+    });
+  
     const logoutBtn = document.getElementById("logoutBtn");
     logoutBtn.addEventListener("click", async () => {
       await signOut(auth);
       window.location.href = "login.html";
     });
-
-    // Dark mode toggle
-    document.getElementById("darkModeToggle").addEventListener("click", () => {
-      document.body.classList.toggle("dark-mode");
-    });
-
-    // Close modal
-    closeModal.addEventListener("click", () => {
-      foodModal.style.display = "none";
-    });
-
+  
+    const moodToIngredients = {
+      sad: ["salmon", "chia seeds", "flaxseed"],
+      tired: ["eggs", "beans", "spinach"],
+      stressed: ["spinach", "almonds", "dark chocolate"],
+      sick: ["garlic", "citrus", "ginger"],
+      focused: ["walnuts", "avocado", "blueberries"],
+      romantic: ["chocolate", "strawberries", "oysters"],
+      happy: ["banana", "pineapple", "whole grains"]
+    };
+  
+    const moodToNutrient = {
+      tired: "vitamin_b12",
+      stressed: "magnesium",
+      sad: "protein",
+      sick: "vitamin_c",
+      focused: "omega_3",
+      happy: "fiber",
+      romantic: "zinc"
+    };
+  
+    const moodToReason = {
+      happy: "Because you're happy, we think a sweet dessert will keep the vibes high!",
+      sad: "Comfort food can help lift your spirits – this dish gives warm, cozy energy.",
+      tired: "You need energy – this breakfast-style dish can help kickstart your system.",
+      romantic: " Rich in zinc, this food will  support connection.",
+      focused: "Vegetarian meals tend to be light but rich in brain-boosting nutrients.",
+      sick: "This food is soothing and hydrating – perfect when you're not feeling 100%.",
+      stressed: "This food provides carbs which support serotonin, your feel-good hormone."
+    };
+  
+    closeModal.addEventListener("click", () => foodModal.style.display = "none");
     proceedToOrder.addEventListener("click", () => {
-      alert("Order placed! 🎉 We'll add real ordering soon.");
+      alert("Order placed! We'll add real ordering soon.");
       foodModal.style.display = "none";
     });
-
+  
     function attachCardClick(cardElement, meal) {
       cardElement.addEventListener("click", () => {
         modalImage.src = meal.image;
@@ -356,7 +433,7 @@
         foodModal.style.display = "flex";
       });
     }
-
+  
     function renderMealCard(meal, container) {
       const card = document.createElement("div");
       card.className = "card";
@@ -371,89 +448,133 @@
       attachCardClick(card, meal);
       container.appendChild(card);
     }
-
+  
     onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists()) {
-          const prefs = userDoc.data().preferences || {};
-          const allergies = prefs.allergies || [];
-          const intolerance = prefs.intolerance || [];
-          const dietType = prefs.dietType || "omnivore";
+      if (!user) return window.location.href = "login.html";
+      const filterDiet = document.getElementById("filterDiet");
+const filterAllergens = document.getElementById("filterAllergens");
+const applyFilters = document.getElementById("applyFilters");
 
-          const mealSnap = await getDocs(collection(db, "meals"));
-          const safeMeals = [];
+applyFilters.addEventListener("click", async () => {
+  const selectedDiet = filterDiet.value;
+  const allergens = filterAllergens.value.split(",").map(a => a.trim().toLowerCase()).filter(Boolean);
 
-          mealSnap.forEach((doc) => {
-            const meal = doc.data();
-            const contains = meal.contains || [];
-            const isSafe = !contains.some(i => allergies.includes(i) || intolerance.includes(i)) &&
-              (!meal.dietType || meal.dietType === dietType);
-            if (isSafe) safeMeals.push(meal);
-          });
+  const mealSnap = await getDocs(collection(db, "meals"));
+  const filteredMeals = [];
 
-          topPicksContainer.innerHTML = "";
-          if (safeMeals.length) {
-            safeMeals.forEach(meal => renderMealCard(meal, topPicksContainer));
-          } else {
-            topPicksContainer.innerHTML = "<p>No meals match your preferences. Try updating them.</p>";
-          }
-        }
-      } else {
-        window.location.href = "login.html";
-      }
+  mealSnap.forEach((doc) => {
+    const meal = doc.data();
+    const contains = meal.contains || [];
+    const dietMatch = !selectedDiet || meal.dietType === selectedDiet;
+    const safe = !contains.some(c => allergens.includes(c.toLowerCase()));
+
+    if (dietMatch && safe) {
+      filteredMeals.push(meal);
+    }
+  });
+
+  topPicksContainer.innerHTML = "";
+  if (filteredMeals.length) {
+    filteredMeals.forEach(meal => renderMealCard(meal, topPicksContainer));
+  } else {
+    topPicksContainer.innerHTML = "<p>No meals match your selected filters.</p>";
+  }
+});
+
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      const prefs = userDoc.exists() ? userDoc.data().preferences || {} : {};
+      const allergies = prefs.allergies || [];
+      const intolerance = prefs.intolerance || [];
+      const dietType = prefs.dietType || "omnivore";
+  
+      const mealSnap = await getDocs(collection(db, "meals"));
+      const safeMeals = [];
+  
+      mealSnap.forEach((doc) => {
+        const meal = doc.data();
+        const contains = meal.contains || [];
+        const isSafe = !contains.some(i => allergies.includes(i) || intolerance.includes(i)) &&
+          (!meal.dietType || meal.dietType === dietType);
+        if (isSafe) safeMeals.push(meal);
+      });
+  
+      topPicksContainer.innerHTML = "";
+      safeMeals.forEach(meal => renderMealCard(meal, topPicksContainer));
     });
-
+  
     findFoodBtn.addEventListener("click", async () => {
       const mood = moodSelect.value;
+      const ingredients = moodToIngredients[mood.toLowerCase()] || [];
+      const nutrient = moodToNutrient[mood.toLowerCase()] || "vitamin_c";
+  
       localContainer.innerHTML = "<p>Loading local suggestions...</p>";
       openFoodContainer.innerHTML = "<p>Loading smart suggestions...</p>";
-
-      try {
-        const user = auth.currentUser;
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        const prefs = userDoc.data().preferences || {};
-        const allergies = prefs.allergies || [];
-        const intolerance = prefs.intolerance || [];
-        const dietType = prefs.dietType || "omnivore";
-
-        const q = query(collection(db, "meals"), where("moods", "array-contains", mood));
-        const querySnapshot = await getDocs(q);
-        const filteredMeals = [];
-
-        querySnapshot.forEach(doc => {
-          const meal = doc.data();
-          const contains = meal.contains || [];
-          const isSafe = !contains.some(i => allergies.includes(i) || intolerance.includes(i)) &&
-            (!meal.dietType || meal.dietType === dietType);
-          if (isSafe) filteredMeals.push(meal);
-        });
-
-        localContainer.innerHTML = "";
-        filteredMeals.forEach(meal => renderMealCard(meal, localContainer));
-      } catch (err) {
-        localContainer.innerHTML = `<p>Error loading meals: ${err.message}</p>`;
+      mealDBContainer.innerHTML = "<p>Loading meals from TheMealDB...</p>";
+  
+      const user = auth.currentUser;
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      const prefs = userDoc.exists() ? userDoc.data().preferences || {} : {};
+  
+      const allergies = prefs.allergies || [];
+      const intolerance = prefs.intolerance || [];
+      const dietType = prefs.dietType || "omnivore";
+  
+      const mealSnap = await getDocs(collection(db, "meals"));
+      const matchedMeals = [];
+  
+      mealSnap.forEach((doc) => {
+        const meal = doc.data();
+        const contains = meal.contains || [];
+        const isSafe = !contains.some(i => allergies.includes(i) || intolerance.includes(i)) &&
+          (!meal.dietType || meal.dietType === dietType);
+  
+        const mealIngredients = meal.ingredients || [];
+        const hasMatch = ingredients.some(ing => mealIngredients.includes(ing));
+  
+        if (isSafe && hasMatch) matchedMeals.push(meal);
+      });
+  
+      localContainer.innerHTML = "";
+      if (matchedMeals.length) {
+        matchedMeals.forEach(meal => renderMealCard(meal, localContainer));
+      } else {
+        localContainer.innerHTML = "<p>No meals matched the mood-based ingredients.</p>";
       }
-
-      // OpenFoodFacts
-      const moodToNutrient = {
-        tired: "vitamin_b12",
-        stressed: "magnesium",
-        sad: "protein",
-        sick: "vitamin_c",
-        focused: "omega_3",
-        happy: "fiber",
-        romantic: "zinc"
-      };
-
-      const nutrient = moodToNutrient[mood.toLowerCase()] || "vitamin_c";
-      const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${nutrient}&search_simple=1&action=process&json=1`;
-
+  
+      // TheMealDB (fallback / variety)
+      const res = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?i=${ingredients[0] || "chicken"}`);
+      const data = await res.json();
+      const meals = data.meals?.slice(0, 6) || [];
+  
+      mealDBContainer.innerHTML = "";
+      meals.forEach(meal => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <img src="${meal.strMealThumb}" alt="${meal.strMeal}" />
+          <div class="card-content">
+            <h4>${meal.strMeal}</h4>
+            <p><strong>Ingredient match:</strong> ${ingredients[0]}</p>
+            <p><em>${moodToReason[mood] || "Enjoy something tasty for your mood!"}</em></p>
+          </div>
+        `;
+        card.addEventListener("click", () => {
+          modalImage.src = meal.strMealThumb;
+          modalTitle.textContent = meal.strMeal;
+          modalRestaurant.textContent = `Category: TheMealDB`;
+          modalNutritionNote.textContent = "Pulled from external recipe database.";
+          foodModal.style.display = "flex";
+        });
+        mealDBContainer.appendChild(card);
+      });
+  
+      // OpenFoodFacts smart nutrient suggestions
       try {
+        const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${nutrient}&search_simple=1&action=process&json=1`;
         const res = await fetch(url);
         const data = await res.json();
         const results = data.products.slice(0, 6);
-
+  
         openFoodContainer.innerHTML = "";
         results.forEach(product => {
           const div = document.createElement("div");
@@ -472,53 +593,6 @@
         openFoodContainer.innerHTML = `<p>Error fetching smart suggestions: ${err.message}</p>`;
       }
     });
-    // Mood to TheMealDB category mapping
-const moodToCategory = {
-  happy: "Dessert",
-  sad: "Comfort Food",
-  tired: "Breakfast",
-  romantic: "Seafood",
-  focused: "Beef",
-  sick: "Soup",
-  stressed: "Pasta"
-};
-
-findFoodBtn.addEventListener("click", async () => {
-  const mood = moodSelect.value;
-  const category = moodToCategory[mood.toLowerCase()] || "Miscellaneous";
-  const mealDBContainer = document.getElementById("mealdb-results");
-  mealDBContainer.innerHTML = "<p>Loading meals from TheMealDB...</p>";
-
-  try {
-    const res = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?c=${encodeURIComponent(category)}`);
-    const data = await res.json();
-    const meals = data.meals.slice(0, 6); // Limit to 6 meals
-
-    mealDBContainer.innerHTML = "";
-    meals.forEach(meal => {
-      const card = document.createElement("div");
-      card.className = "card";
-      card.innerHTML = `
-        <img src="${meal.strMealThumb}" alt="${meal.strMeal}" />
-        <div class="card-content">
-          <h4>${meal.strMeal}</h4>
-          <p><strong>Category:</strong> ${category}</p>
-        </div>
-      `;
-      card.addEventListener("click", () => {
-        modalImage.src = meal.strMealThumb;
-        modalTitle.textContent = meal.strMeal;
-        modalRestaurant.textContent = `Category: ${category}`;
-        modalNutritionNote.textContent = "A delightful choice from TheMealDB!";
-        foodModal.style.display = "flex";
-      });
-      mealDBContainer.appendChild(card);
-    });
-  } catch (err) {
-    mealDBContainer.innerHTML = `<p>Error fetching meals from TheMealDB: ${err.message}</p>`;
-  }
-});
-
-  </script>
+  </script>  
 </body>
 </html>
