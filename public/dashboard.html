@@ -221,6 +221,117 @@
       background: none;
       cursor: pointer;
     }
+    .search-banner {
+  background: linear-gradient(135deg, #ff9a8b, #ff6f61);
+  padding: 40px 20px;
+  border-radius: 16px;
+  text-align: center;
+  margin-bottom: 30px;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.search-banner h2 {
+  margin: 0 0 20px 0;
+  font-size: 1.8rem;
+}
+
+.search-banner input {
+  padding: 12px 18px;
+  width: 100%;
+  max-width: 500px;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: none;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.cuisine-filter {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.cuisine-buttons {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.cuisine-btn {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 20px;
+  background-color: #ffe1dc;
+  color: #000000;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.cuisine-btn:hover {
+  background-color: #ffd0c7;
+}
+
+#floatingCartBtn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff6f61;
+  color: white;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 30px;
+  font-size: 1.2rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  cursor: pointer;
+  z-index: 100;
+}
+
+.skeleton {
+  background: #eee;
+  height: 200px;
+  width: 300px;
+  border-radius: 12px;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1 }
+  50% { opacity: 0.4 }
+  100% { opacity: 1 }
+}
+.emoji-btn, .cuisine-btn {
+  border-radius: 999px;
+  padding: 8px 16px;
+  background: #fceae6;
+  font-size: 1.2rem;
+  transition: background 0.3s ease;
+}
+
+.emoji-btn:hover, .cuisine-btn:hover {
+  background: #ffd4c9;
+}
+.toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ff6f61;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translate(-50%, 20px); opacity: 0 }
+  to { transform: translate(-50%, 0); opacity: 1 }
+}
+
+
   </style>
 </head>
 <body>
@@ -232,6 +343,8 @@
     <div class="settings-container">
       <button id="darkModeToggle">🌓</button>
       <button id="settingsBtn" title="Settings">⚙️</button>
+      <button id="floatingCartBtn">🛒 </button>
+
       <div id="settingsMenu" class="dropdown-menu hidden">
         <a href="profile.html">View Profile</a>
         <a href="orders.html">Recent Orders</a>
@@ -256,59 +369,61 @@
       </select>
       <button id="findBtn">Find Food</button>
     </section>
-
-    <section>
-      <h3>My Top Picks</h3>
-      <div class="carousel" id="top-picks"></div>
+  
+    <section class="search-banner">
+      <h2>What are you craving today?</h2>
+      <input type="text" id="bannerSearch" placeholder="Search any food, ingredient or restaurant..." />
     </section>
-    <section class="filter-section" style="margin-bottom: 30px;">
-      <h3>Filter Meals</h3>
-      
-      <label for="filterDiet">Diet Type:</label>
-      <select id="filterDiet">
-        <option value="">Any</option>
-        <option value="omnivore">Omnivore</option>
-        <option value="vegetarian">Vegetarian</option>
-        <option value="vegan">Vegan</option>
-      </select>
-    
-      <label for="filterAllergens">Avoid Ingredients (comma-separated):</label>
-      <input type="text" id="filterAllergens" placeholder="e.g. nuts, dairy, soy" />
-    
-      <button id="applyFilters">Apply Filters</button>
+    <section class="cuisine-filter">
+      <h3>Quick Pick by Cuisine</h3>
+      <div class="cuisine-buttons">
+        <button class="cuisine-btn" data-cuisine="Asian">🥢 Asian</button>
+        <button class="cuisine-btn" data-cuisine="Italian">🍝 Italian</button>
+        <button class="cuisine-btn" data-cuisine="Mexican">🌮 Mexican</button>
+        <button class="cuisine-btn" data-cuisine="British">🍲 British </button>
+        <button class="cuisine-btn" data-cuisine="Dessert">🍰 Dessert</button>
+      </div>
     </section>
     
     <section>
       <h3>Featured Restaurants in Hull</h3>
       <div class="cards" id="results"></div>
     </section>
-
+  
     <section>
       <h3>Meals from TheMealDB</h3>
       <div class="cards" id="mealdb-results"></div>
     </section>
-    
-    <section>
-      <h3>Smart Nutrition-Based Suggestions</h3>
-      <div class="cards" id="openfood-results"></div>
-    </section>
   </div>
-
+  
   <footer>
     &copy; 2024 GoodMoodFood. All rights reserved.
   </footer>
-
+  
   <!-- MODAL -->
   <div id="foodModal" class="modal">
     <div class="modal-content">
       <button class="close-btn" id="closeModal">&times;</button>
-      <img id="modalImage" src="" alt="Food Image"/>
+      <img id="modalImage" src="" alt="Food Image" />
       <h4 id="modalTitle"></h4>
       <p id="modalRestaurant"></p>
       <p id="modalNutritionNote"></p>
       <button id="proceedToOrder">Proceed to Order</button>
     </div>
   </div>
+
+<!-- CART MODAL -->
+<div id="cartModal" class="modal">
+  <div class="modal-content" style="max-height: 80vh; overflow-y: auto;">
+    <button class="close-btn" id="closeCart">&times;</button>
+    <h3>Your Basket</h3>
+    <div id="cartItems"></div>
+    <button id="checkoutBtn" style="margin-top: 20px;">Proceed to Checkout</button>
+  </div>
+</div>
+
+<div class="card skeleton"></div>
+
 
   <script type="module">
     import { app } from "../firebase-config.js";
@@ -331,37 +446,8 @@
     const moodSelect = document.getElementById("mood");
     const findFoodBtn = document.getElementById("findBtn");
     const localContainer = document.getElementById("results");
-    const openFoodContainer = document.getElementById("openfood-results");
-    const topPicksContainer = document.getElementById("top-picks");
     const mealDBContainer = document.getElementById("mealdb-results");
   
-    //
-
-    function applySmartFilters(meals, prefs, options) {
-  const { allergies, intolerance, dietType } = prefs;
-  const { useMood, mood, moodIngredients } = options;
-
-  return meals.filter(meal => {
-    const contains = meal.contains || [];
-    const ingredients = meal.ingredients || [];
-    
-    const hasAllergen = contains.some(c =>
-      allergies.includes(c.toLowerCase()) || intolerance.includes(c.toLowerCase())
-    );
-    if (hasAllergen) return false;
-
-    if (meal.dietType && dietType && meal.dietType !== dietType) return false;
-
-    if (useMood && moodIngredients?.length) {
-      const matchesMood = moodIngredients.some(ing =>
-        ingredients.includes(ing.toLowerCase())
-      );
-      if (!matchesMood) return false;
-    }
-
-    return true;
-  });
-}
     const foodModal = document.getElementById("foodModal");
     const modalImage = document.getElementById("modalImage");
     const modalTitle = document.getElementById("modalTitle");
@@ -369,24 +455,6 @@
     const modalNutritionNote = document.getElementById("modalNutritionNote");
     const closeModal = document.getElementById("closeModal");
     const proceedToOrder = document.getElementById("proceedToOrder");
-  
-    const settingsBtn = document.getElementById("settingsBtn");
-    const settingsMenu = document.getElementById("settingsMenu");
-    const darkModeToggle = document.getElementById("darkModeToggle");
-  
-    settingsBtn.addEventListener("click", () => {
-      settingsMenu.classList.toggle("hidden");
-    });
-  
-    darkModeToggle.addEventListener("click", () => {
-      document.body.classList.toggle("dark-mode");
-    });
-  
-    const logoutBtn = document.getElementById("logoutBtn");
-    logoutBtn.addEventListener("click", async () => {
-      await signOut(auth);
-      window.location.href = "login.html";
-    });
   
     const moodToIngredients = {
       sad: ["salmon", "chia seeds", "flaxseed"],
@@ -398,32 +466,34 @@
       happy: ["banana", "pineapple", "whole grains"]
     };
   
-    const moodToNutrient = {
-      tired: "vitamin_b12",
-      stressed: "magnesium",
-      sad: "protein",
-      sick: "vitamin_c",
-      focused: "omega_3",
-      happy: "fiber",
-      romantic: "zinc"
-    };
-  
     const moodToReason = {
       happy: "Because you're happy, we think a sweet dessert will keep the vibes high!",
       sad: "Comfort food can help lift your spirits – this dish gives warm, cozy energy.",
       tired: "You need energy – this breakfast-style dish can help kickstart your system.",
-      romantic: " Rich in zinc, this food will  support connection.",
+      romantic: " Rich in zinc, this food will support connection.",
       focused: "Vegetarian meals tend to be light but rich in brain-boosting nutrients.",
       sick: "This food is soothing and hydrating – perfect when you're not feeling 100%.",
       stressed: "This food provides carbs which support serotonin, your feel-good hormone."
     };
   
     closeModal.addEventListener("click", () => foodModal.style.display = "none");
-    proceedToOrder.addEventListener("click", () => {
-      alert("Order placed! We'll add real ordering soon.");
-      foodModal.style.display = "none";
-    });
-  
+    
+    const currentMood = document.getElementById("mood")?.value || "good";
+
+const moodNutritionNotes = {
+  happy: "a burst of sweetness to match your vibe!",
+  sad: "warmth and comfort to lift your spirits.",
+  tired: "a tasty way to refuel and recharge.",
+  stressed: "something soothing to help you unwind.",
+  sick: "gentle on the tummy and comforting.",
+  romantic: "flavorful and perfect for sharing the love.",
+  focused: "balanced and energizing to keep your mind sharp."
+};
+
+const moodNote = moodNutritionNotes[currentMood] || "something delicious to match your mood.";
+
+modalNutritionNote.textContent = `This food was chosen to match your mood — it’s likely to offer ${moodNote}`;
+
     function attachCardClick(cardElement, meal) {
       cardElement.addEventListener("click", () => {
         modalImage.src = meal.image;
@@ -449,90 +519,134 @@
       container.appendChild(card);
     }
   
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) return window.location.href = "login.html";
-      const filterDiet = document.getElementById("filterDiet");
-const filterAllergens = document.getElementById("filterAllergens");
-const applyFilters = document.getElementById("applyFilters");
+    const bannerSearch = document.getElementById("bannerSearch");
 
-applyFilters.addEventListener("click", async () => {
-  const selectedDiet = filterDiet.value;
-  const allergens = filterAllergens.value.split(",").map(a => a.trim().toLowerCase()).filter(Boolean);
+    bannerSearch.addEventListener("input", async (e) => {
+  const query = e.target.value.toLowerCase().trim();
 
+  if (!query) {
+    localContainer.innerHTML = "";
+    mealDBContainer.innerHTML = "";
+    return;
+  }
+
+  // === 🔍 Firestore SEARCH ===
   const mealSnap = await getDocs(collection(db, "meals"));
-  const filteredMeals = [];
+  const matchedLocal = [];
 
-  mealSnap.forEach((doc) => {
+  mealSnap.forEach(doc => {
     const meal = doc.data();
-    const contains = meal.contains || [];
-    const dietMatch = !selectedDiet || meal.dietType === selectedDiet;
-    const safe = !contains.some(c => allergens.includes(c.toLowerCase()));
-
-    if (dietMatch && safe) {
-      filteredMeals.push(meal);
+    const nameMatch = meal.name?.toLowerCase().includes(query);
+    const tagMatch = meal.tags?.some(tag => tag.toLowerCase().includes(query));
+    const ingredientMatch = meal.contains?.some(ing => ing.toLowerCase().includes(query));
+    if (nameMatch || tagMatch || ingredientMatch) {
+      matchedLocal.push(meal);
     }
   });
 
-  topPicksContainer.innerHTML = "";
-  if (filteredMeals.length) {
-    filteredMeals.forEach(meal => renderMealCard(meal, topPicksContainer));
+  localContainer.innerHTML = "";
+  if (matchedLocal.length) {
+    matchedLocal.forEach(meal => renderMealCard(meal, localContainer));
   } else {
-    topPicksContainer.innerHTML = "<p>No meals match your selected filters.</p>";
+    localContainer.innerHTML = `<p>No meals found in our local database.</p>`;
+  }
+
+  // === 🍽 TheMealDB SEARCH ===
+  const res = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${query}`);
+  const data = await res.json();
+  const meals = data.meals?.slice(0, 6) || [];
+
+  mealDBContainer.innerHTML = "";
+  if (meals.length) {
+    meals.forEach(meal => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <img src="${meal.strMealThumb}" alt="${meal.strMeal}" />
+        <div class="card-content">
+          <h4>${meal.strMeal}</h4>
+          <p><em>Result from TheMealDB</em></p>
+        </div>
+      `;
+      card.addEventListener("click", () => {
+        modalImage.src = meal.strMealThumb;
+        modalTitle.textContent = meal.strMeal;
+        modalRestaurant.textContent = `Category: TheMealDB`;
+        modalNutritionNote.textContent = "Pulled from external recipe database.";
+        foodModal.style.display = "flex";
+      });
+      mealDBContainer.appendChild(card);
+    });
+  } else {
+    mealDBContainer.innerHTML = `<p>No matches from TheMealDB.</p>`;
   }
 });
+proceedToOrder.addEventListener("click", () => {
+  const newMeal = {
+    name: modalTitle.textContent,
+    restaurant: modalRestaurant.textContent.replace("From ", ""),
+    nutritionNote: modalNutritionNote.textContent,
+    image: modalImage.src
+  };
 
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      const prefs = userDoc.exists() ? userDoc.data().preferences || {} : {};
-      const allergies = prefs.allergies || [];
-      const intolerance = prefs.intolerance || [];
-      const dietType = prefs.dietType || "omnivore";
-  
-      const mealSnap = await getDocs(collection(db, "meals"));
-      const safeMeals = [];
-  
-      mealSnap.forEach((doc) => {
-        const meal = doc.data();
-        const contains = meal.contains || [];
-        const isSafe = !contains.some(i => allergies.includes(i) || intolerance.includes(i)) &&
-          (!meal.dietType || meal.dietType === dietType);
-        if (isSafe) safeMeals.push(meal);
-      });
-  
-      topPicksContainer.innerHTML = "";
-      safeMeals.forEach(meal => renderMealCard(meal, topPicksContainer));
-    });
-  
+  const basket = JSON.parse(localStorage.getItem("basket") || "[]");
+  const alreadyInBasket = basket.some(item => item.name === newMeal.name);
+
+  if (!alreadyInBasket) {
+    basket.push(newMeal);
+    localStorage.setItem("basket", JSON.stringify(basket));
+    showToast(`${newMeal.name} added to your basket!`);
+    updateCartCount(); // 💡 update the cart badge!
+  } else {
+    showToast(`${newMeal.name} is already in your basket.`);
+  }
+
+  foodModal.style.display = "none";
+});
+function updateCartCount() {
+  const cart = JSON.parse(localStorage.getItem("basket") || "[]");
+  document.getElementById("floatingCartBtn").textContent = `🛒 ${cart.length}`;
+}
+
+
+
+function showToast(message) {
+  const toast = document.createElement("div");
+  toast.className = "toast";
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+
+
     findFoodBtn.addEventListener("click", async () => {
       const mood = moodSelect.value;
       const ingredients = moodToIngredients[mood.toLowerCase()] || [];
-      const nutrient = moodToNutrient[mood.toLowerCase()] || "vitamin_c";
   
       localContainer.innerHTML = "<p>Loading local suggestions...</p>";
-      openFoodContainer.innerHTML = "<p>Loading smart suggestions...</p>";
       mealDBContainer.innerHTML = "<p>Loading meals from TheMealDB...</p>";
   
       const user = auth.currentUser;
       const userDoc = await getDoc(doc(db, "users", user.uid));
       const prefs = userDoc.exists() ? userDoc.data().preferences || {} : {};
-  
       const allergies = prefs.allergies || [];
       const intolerance = prefs.intolerance || [];
-      const dietType = prefs.dietType || "omnivore";
   
       const mealSnap = await getDocs(collection(db, "meals"));
-      const matchedMeals = [];
-  
-      mealSnap.forEach((doc) => {
-        const meal = doc.data();
-        const contains = meal.contains || [];
-        const isSafe = !contains.some(i => allergies.includes(i) || intolerance.includes(i)) &&
-          (!meal.dietType || meal.dietType === dietType);
-  
-        const mealIngredients = meal.ingredients || [];
-        const hasMatch = ingredients.some(ing => mealIngredients.includes(ing));
-  
-        if (isSafe && hasMatch) matchedMeals.push(meal);
-      });
+const matchedMeals = [];
+
+mealSnap.forEach((doc) => {
+  const meal = doc.data();
+  const contains = meal.contains || [];
+  const isSafe = !contains.some(i => allergies.includes(i) || intolerance.includes(i));
+
+  const mealMoods = meal.moods || [];
+  const matchesMood = mealMoods.includes(mood);
+
+  if (isSafe && matchesMood) matchedMeals.push(meal);
+});
+
   
       localContainer.innerHTML = "";
       if (matchedMeals.length) {
@@ -554,7 +668,6 @@ applyFilters.addEventListener("click", async () => {
           <img src="${meal.strMealThumb}" alt="${meal.strMeal}" />
           <div class="card-content">
             <h4>${meal.strMeal}</h4>
-            <p><strong>Ingredient match:</strong> ${ingredients[0]}</p>
             <p><em>${moodToReason[mood] || "Enjoy something tasty for your mood!"}</em></p>
           </div>
         `;
@@ -567,32 +680,137 @@ applyFilters.addEventListener("click", async () => {
         });
         mealDBContainer.appendChild(card);
       });
-  
-      // OpenFoodFacts smart nutrient suggestions
-      try {
-        const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${nutrient}&search_simple=1&action=process&json=1`;
-        const res = await fetch(url);
-        const data = await res.json();
-        const results = data.products.slice(0, 6);
-  
-        openFoodContainer.innerHTML = "";
-        results.forEach(product => {
-          const div = document.createElement("div");
-          div.className = "card";
-          div.innerHTML = `
-            <img src="${product.image_url || 'https://via.placeholder.com/300x180'}" alt="${product.product_name}" />
-            <div class="card-content">
-              <h4>${product.product_name || "Unnamed Food"}</h4>
-              <p><strong>${product.brands || "Unknown Brand"}</strong></p>
-              <p><em>High in ${nutrient.replace("_", " ")}, ideal for feeling ${mood}</em></p>
-            </div>
-          `;
-          openFoodContainer.appendChild(div);
-        });
-      } catch (err) {
-        openFoodContainer.innerHTML = `<p>Error fetching smart suggestions: ${err.message}</p>`;
-      }
     });
+  
+    onAuthStateChanged(auth, async (user) => {
+  if (!user) return window.location.href = "login.html";
+});
+updateCartCount();
+
+const settingsBtn = document.getElementById("settingsBtn");
+const settingsMenu = document.getElementById("settingsMenu");
+const darkModeToggle = document.getElementById("darkModeToggle");
+const logoutBtn = document.getElementById("logoutBtn");
+
+settingsBtn?.addEventListener("click", () => {
+  settingsMenu.classList.toggle("hidden");
+});
+
+darkModeToggle?.addEventListener("click", () => {
+  document.body.classList.toggle("dark-mode");
+});
+
+logoutBtn?.addEventListener("click", async () => {
+  await signOut(auth);
+  window.location.href = "login.html";
+});
+document.querySelectorAll(".cuisine-btn").forEach(button => {
+  button.addEventListener("click", async () => {
+    const cuisine = button.dataset.cuisine.toLowerCase();
+
+    // Firestore search
+    const mealSnap = await getDocs(collection(db, "meals"));
+    const matchedMeals = [];
+
+    mealSnap.forEach((doc) => {
+      const meal = doc.data();
+      const match = meal.cuisine?.toLowerCase().includes(cuisine);
+      if (match) matchedMeals.push(meal);
+    });
+
+    localContainer.innerHTML = "";
+    if (matchedMeals.length) {
+      matchedMeals.forEach(meal => renderMealCard(meal, localContainer));
+    } else {
+      localContainer.innerHTML = `<p>No meals found for ${cuisine} cuisine.</p>`;
+    }
+
+    // TheMealDB fallback
+    const res = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?a=${cuisine}`);
+    const data = await res.json();
+    const meals = data.meals?.slice(0, 6) || [];
+
+    mealDBContainer.innerHTML = "";
+    meals.forEach(meal => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <img src="${meal.strMealThumb}" alt="${meal.strMeal}" />
+        <div class="card-content">
+          <h4>${meal.strMeal}</h4>
+          <p><em>From TheMealDB - ${cuisine.charAt(0).toUpperCase() + cuisine.slice(1)} cuisine</em></p>
+        </div>
+      `;
+      card.addEventListener("click", () => {
+        modalImage.src = meal.strMealThumb;
+        modalTitle.textContent = meal.strMeal;
+        modalRestaurant.textContent = `Category: TheMealDB`;
+        modalNutritionNote.textContent = "Pulled from external recipe database.";
+        foodModal.style.display = "flex";
+      });
+      mealDBContainer.appendChild(card);
+    });
+  });
+});
+const cartModal = document.getElementById("cartModal");
+const closeCart = document.getElementById("closeCart");
+const floatingCartBtn = document.getElementById("floatingCartBtn");
+const cartItems = document.getElementById("cartItems");
+const checkoutBtn = document.getElementById("checkoutBtn");
+
+function renderCart() {
+  const cart = JSON.parse(localStorage.getItem("basket") || "[]");
+  cartItems.innerHTML = "";
+
+  if (cart.length === 0) {
+    cartItems.innerHTML = "<p>Your basket is empty.</p>";
+    return;
+  }
+
+  cart.forEach((meal, index) => {
+    const item = document.createElement("div");
+    item.style.marginBottom = "15px";
+    item.innerHTML = `
+      <img src="${meal.image}" style="width:100%; border-radius: 8px; margin-bottom: 8px;" />
+      <h4>${meal.name}</h4>
+      <p><em>${meal.restaurant}</em></p>
+      <p>${meal.nutritionNote}</p>
+      <button class="remove-btn" data-index="${index}" style="background:#ccc;color:#333;margin-top:5px;">Remove</button>
+    `;
+    cartItems.appendChild(item);
+  });
+
+  document.querySelectorAll(".remove-btn").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      const i = parseInt(e.target.dataset.index);
+      const cart = JSON.parse(localStorage.getItem("basket") || "[]");
+      cart.splice(i, 1);
+      localStorage.setItem("basket", JSON.stringify(cart));
+      renderCart();
+      updateCartCount();
+    });
+  });
+}
+
+floatingCartBtn.addEventListener("click", () => {
+  renderCart();
+  cartModal.style.display = "flex";
+});
+
+closeCart.addEventListener("click", () => {
+  cartModal.style.display = "none";
+});
+
+checkoutBtn.addEventListener("click", () => {
+  window.location.href = "checkout.html"; // ink to the  checkout page
+});
+
+
+
+// Call this after adding to basket
+
+
+
   </script>  
 </body>
 </html>
