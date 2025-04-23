@@ -478,22 +478,7 @@
   
     closeModal.addEventListener("click", () => foodModal.style.display = "none");
     
-    const currentMood = document.getElementById("mood")?.value || "good";
-
-const moodNutritionNotes = {
-  happy: "a burst of sweetness to match your vibe!",
-  sad: "warmth and comfort to lift your spirits.",
-  tired: "a tasty way to refuel and recharge.",
-  stressed: "something soothing to help you unwind.",
-  sick: "gentle on the tummy and comforting.",
-  romantic: "flavorful and perfect for sharing the love.",
-  focused: "balanced and energizing to keep your mind sharp."
-};
-
-const moodNote = moodNutritionNotes[currentMood] || "something delicious to match your mood.";
-
-modalNutritionNote.textContent = `This food was chosen to match your mood — it’s likely to offer ${moodNote}`;
-
+  
     function attachCardClick(cardElement, meal) {
       cardElement.addEventListener("click", () => {
         modalImage.src = meal.image;
