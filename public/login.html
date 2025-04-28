@@ -4,80 +4,96 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login - GoodMoodFood</title>
-  <link rel="stylesheet" href="../public/styles/main.css">
+  <link rel="stylesheet" href="../styles/main.css">
   <style>
+    /* Slideshow Background */
+    .background-slideshow {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .background-slideshow .slide {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      filter: brightness(0.6);
+      transition: opacity 1.5s ease-in-out;
+    }
+
+    .background-slideshow .slide.active {
+      opacity: 1;
+    }
+
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #fdfdfd;
-      margin: 0;
-      color: #333;
-    }
-
-    header {
-      background-color: #000;
-      color: #fff;
-      padding: 20px;
-      text-align: center;
-    }
-
-    .logo h1 {
-      font-size: 2.2rem;
-      margin: 0;
-    }
-
-    .login-container {
+      background: none;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
-      min-height: 80vh;
-      padding: 20px;
+      min-height: 100vh;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0 20px;
     }
 
-    .login-form {
-      background-color: #fff;
-      padding: 35px;
-      border-radius: 12px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-      width: 100%;
+    .login-card {
+      background-color: rgba(255, 255, 255, 0.92);
+      padding: 40px;
+      border-radius: 16px;
       max-width: 420px;
+      width: 100%;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      animation: fadeIn 0.6s ease-in-out;
+      position: relative;
+      z-index: 1;
     }
 
-    .login-form h2 {
+    .login-card h2 {
       text-align: center;
-      margin-bottom: 25px;
-      color: #222;
+      color: #333;
+      margin-bottom: 20px;
     }
 
-    .login-form label {
-      display: block;
+    .login-card form {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .login-card label {
       font-weight: 500;
-      margin-bottom: 8px;
+      font-size: 0.95rem;
       color: #444;
     }
 
-    .login-form input[type="email"],
-    .login-form input[type="password"] {
-      width: 100%;
+    .login-card input {
       padding: 12px;
-      font-size: 1rem;
-      margin-bottom: 20px;
+      border-radius: 8px;
       border: 1px solid #ccc;
-      border-radius: 8px;
+      font-size: 1rem;
     }
 
-    .login-form input[type="submit"] {
+    .login-card input:focus {
+      border-color: #ff6f61;
+      outline: none;
+    }
+
+    .login-card input[type="submit"] {
       background-color: #ff6f61;
+      color: white;
       border: none;
-      color: #fff;
       cursor: pointer;
-      padding: 12px;
-      font-size: 1.1rem;
-      border-radius: 8px;
-      width: 100%;
-      transition: background-color 0.3s ease;
+      font-weight: 600;
     }
 
-    .login-form input[type="submit"]:hover {
+    .login-card input[type="submit"]:hover {
       background-color: #e55447;
     }
 
@@ -88,8 +104,8 @@
 
     .alt-option a {
       color: #ff6f61;
-      text-decoration: none;
       font-weight: 600;
+      text-decoration: none;
     }
 
     .alt-option a:hover {
@@ -104,42 +120,49 @@
     }
 
     footer {
-      background-color: #222;
-      color: #eee;
       text-align: center;
+      color: #fff;
       padding: 15px 10px;
       font-size: 0.9rem;
+      margin-top: 40px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
-  <header>
-    <div class="logo">
-      <h1>GoodMoodFood</h1>
-    </div>
-  </header>
 
-  <div class="login-container">
-    <div class="login-form">
-      <h2>Login</h2>
-      <form id="loginForm">
-        <label for="email">Email</label>
-        <input type="email" id="email" placeholder="Enter your email" required />
+  <!-- Slideshow Background -->
+  <div class="background-slideshow">
+    <img src="../images/baked-goods-1846460_1920.jpg" class="slide active">
+  </div>
 
-        <label for="password">Password</label>
-        <input type="password" id="password" placeholder="Enter your password" required />
+  <!-- Login Form -->
+  <div class="login-card">
+    <h2>Welcome Back</h2>
+    <form id="loginForm">
+      <label for="email">Email</label>
+      <input type="email" id="email" placeholder="Enter your email" required />
 
-        <input type="submit" value="Login" />
-      </form>
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="Enter your password" required />
 
-      <div id="error-msg"></div>
+      <input type="submit" value="Login" />
+    </form>
 
-      <div class="alt-option">
-        <p>Don't have an account? <a href="register.html">Register here</a></p>
-      </div>
+    <div id="error-msg"></div>
+
+    <div class="alt-option">
+      <p>Don't have an account? <a href="register.html">Register here</a></p>
+      <p><a href="#" id="forgotPassword">Forgot your password?</a></p>
+
     </div>
   </div>
 
+  <!-- Footer -->
   <footer>
     <p>&copy; 2024 GoodMoodFood. All rights reserved.</p>
   </footer>
@@ -163,7 +186,7 @@
       storageBucket: "goodmoodfood-84f7b.appspot.com",
       messagingSenderId: "715419127474",
       appId: "1:715419127474:web:6e86fbb1465bad30df83ab"
-};
+    };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -192,7 +215,8 @@
 
         if (userDoc.exists()) {
           const data = userDoc.data();
-          window.location.href = data.completedProfile ? "dashboard.html" : "questionnaire.html";
+          window.location.href = data.role === "restaurant" ? "restaurant-panel.html" :
+                                 data.completedProfile ? "dashboard.html" : "questionnaire.html";
         } else {
           errorMsg.textContent = "User data not found.";
         }
@@ -213,5 +237,91 @@
       }
     });
   </script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import {
+      getAuth,
+      signInWithEmailAndPassword,
+      sendPasswordResetEmail
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      getDoc
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  
+    const firebaseConfig = {
+      apiKey: "AIzaSyDTiLV8wLyZQc0W-YzdWQGooZq2KFoU00w",
+      authDomain: "goodmoodfood-84f7b.firebaseapp.com",
+      projectId: "goodmoodfood-84f7b",
+      storageBucket: "goodmoodfood-84f7b.appspot.com",
+      messagingSenderId: "715419127474",
+      appId: "1:715419127474:web:6e86fbb1465bad30df83ab"
+    };
+  
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+  
+    const form = document.getElementById("loginForm");
+    const errorMsg = document.getElementById("error-msg");
+  
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      errorMsg.textContent = "";
+  
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+  
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+  
+        if (!user.emailVerified) {
+          errorMsg.textContent = "Please verify your email before logging in.";
+          return;
+        }
+  
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          const data = userDoc.data();
+          window.location.href = data.role === "restaurant" ? "restaurant-panel.html" :
+                                  data.completedProfile ? "dashboard.html" : "questionnaire.html";
+        } else {
+          errorMsg.textContent = "User data not found.";
+        }
+      } catch (error) {
+        switch (error.code) {
+          case "auth/wrong-password":
+            errorMsg.textContent = "Incorrect password. Please try again.";
+            break;
+          case "auth/user-not-found":
+            errorMsg.textContent = "No account found for that email.";
+            break;
+          case "auth/too-many-requests":
+            errorMsg.textContent = "Too many attempts. Please wait or reset your password.";
+            break;
+          default:
+            errorMsg.textContent = "Login error: " + error.message;
+        }
+      }
+    });
+  
+    // 🔁 Forgot Password Link
+    document.getElementById("forgotPassword").addEventListener("click", async () => {
+      const email = prompt("Please enter your email for password reset:");
+      if (!email) return;
+  
+      try {
+        await sendPasswordResetEmail(auth, email);
+        errorMsg.style.color = "green";
+        errorMsg.textContent = "✅ Password reset email sent. Check your inbox.";
+      } catch (err) {
+        errorMsg.style.color = "red";
+        errorMsg.textContent = "❌ Reset failed: " + err.message;
+      }
+    });
+  </script>
+  
 </body>
 </html>

@@ -6,7 +6,6 @@
   <title>Sign Up - GoodMoodFood</title>
   <link rel="stylesheet" href="../styles/main.css">
   <style>
-    /* Slideshow Background */
     .background-slideshow {
       position: fixed;
       top: 0; left: 0;
@@ -31,7 +30,6 @@
       opacity: 1;
     }
 
-    /* Page Layout */
     body {
       background: none;
       display: flex;
@@ -79,7 +77,6 @@
       border-radius: 8px;
       border: 1px solid #ccc;
       font-size: 1rem;
-      transition: border-color 0.3s ease;
     }
 
     .signup-card input:focus {
@@ -93,7 +90,6 @@
       border: none;
       cursor: pointer;
       font-weight: 600;
-      transition: background-color 0.3s ease;
     }
 
     .signup-card input[type="submit"]:hover {
@@ -115,6 +111,12 @@
       text-decoration: underline;
     }
 
+    #signup-msg {
+      text-align: center;
+      font-size: 0.95rem;
+      margin-top: 10px;
+    }
+
     footer {
       text-align: center;
       color: #fff;
@@ -123,55 +125,33 @@
       margin-top: 40px;
     }
 
-    footer ul {
-      list-style: none;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      margin-top: 10px;
-    }
-
-    footer ul li a {
-      color: #fff;
-      text-decoration: none;
-    }
-
-    footer ul li a:hover {
-      text-decoration: underline;
-    }
-
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
-    }
-
-    @media (max-width: 480px) {
-      .signup-card {
-        padding: 30px 20px;
-      }
     }
   </style>
 </head>
 <body>
 
-  <!-- Background Slideshow -->
+  <!-- Background -->
   <div class="background-slideshow">
-    <img src="../images/baked-goods-1846460_1920.jpg" class="slide">
+    <img src="../images/baked-goods-1846460_1920.jpg" class="slide active">
   </div>
 
   <!-- Sign Up Form -->
   <div class="signup-card">
-    <h2>Join GoodMoodFood</h2>
+    <h2>Create an Account</h2>
     <form id="signupForm">
-      <label for="email">Email Address</label>
+      <label for="email">Email</label>
       <input type="email" id="email" placeholder="you@example.com" required />
 
       <label for="password">Password</label>
       <input type="password" id="password" placeholder="Minimum 6 characters" required />
 
-      <input type="submit" value="Continue to Preferences">
+      <input type="submit" value="Continue" />
     </form>
+
+    <div id="signup-msg"></div>
 
     <div class="alt-option">
       <p>Already have an account? <a href="login.html">Login here</a></p>
@@ -181,14 +161,9 @@
   <!-- Footer -->
   <footer>
     <p>&copy; 2024 GoodMoodFood. All rights reserved.</p>
-    <ul class="social-links">
-      <li><a href="#">Facebook</a></li>
-      <li><a href="#">Twitter</a></li>
-      <li><a href="#">Instagram</a></li>
-    </ul>
   </footer>
 
-  <!-- Firebase Auth Logic -->
+  <!-- Firebase Signup Logic -->
   <script type="module">
     import { auth, db } from '../firebase-config.js';
     import {
@@ -196,39 +171,40 @@
       sendEmailVerification
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-  
-    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+
+    const form = document.getElementById("signupForm");
+    const message = document.getElementById("signup-msg");
+
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
-  
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-  
+      message.textContent = "";
+
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
       try {
         const userCred = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCred.user;
-  
+
         await sendEmailVerification(user);
-        alert("A verification email has been sent. Please check your inbox.");
-  
+        message.style.color = "green";
+        message.textContent = "✅ Verification email sent. Check your inbox!";
+
         await setDoc(doc(db, "users", user.uid), {
           email: email,
           createdAt: new Date(),
           completedProfile: false
         });
-  
-        window.location.href = "verify.html";
-  
+
+        setTimeout(() => {
+          window.location.href = "verify.html";
+        }, 2000);
       } catch (err) {
-        if (err.code === "auth/email-already-in-use") {
-          alert("You already have an account! Redirecting you to login...");
-          window.location.href = "login.html";
-        } else {
-          alert("Signup error: " + err.message);
-        }
+        message.style.color = "red";
+        message.textContent = "Signup error: " + err.message;
       }
     });
   </script>
-  
-  
+
 </body>
 </html>

@@ -43,59 +43,102 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import {
-      getFirestore,
-      collection,
-      getDocs,
-      query,
-      where,
-      updateDoc,
-      doc
-    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-  
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
     const firebaseConfig = {
-      apiKey: "AIzaSyDTiLV8wLyZQc0W-YzdWQGooZq2KFoU00w",
-      authDomain: "goodmoodfood-84f7b.firebaseapp.com",
-      projectId: "goodmoodfood-84f7b",
-      storageBucket: "goodmoodfood-84f7b.appspot.com",
-      messagingSenderId: "715419127474",
-      appId: "1:715419127474:web:6e86fbb1465bad30df83ab",
-    };
-  
+  apiKey: "AIzaSyDTiLV8wLyZQc0W-YzdWQGooZq2KFoU00w",
+  authDomain: "goodmoodfood-84f7b.firebaseapp.com",
+  projectId: "goodmoodfood-84f7b",
+  storageBucket: "goodmoodfood-84f7b.appspot.com",
+  messagingSenderId: "715419127474",
+  appId: "1:715419127474:web:6e86fbb1465bad30df83ab",
+};
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+
+    const sampleMeals = [
   
-    const tagMap = {
-      "Risotto ai Funghi": ["umami", "savory", "vegetarian", "warm"],
-      "Pasta Primavera": ["vegetarian", "light", "antioxidant-rich"],
-      "Polenta with Grilled Vegetables": ["fiber-rich", "vegan", "grilled"],
-      "Bruschetta Trio": ["starter", "herby", "low-calorie"],
-      "Eggplant Parmigiana": ["comfort", "baked", "cheesy"],
-      "Acqua Frizzante with Lemon": ["refreshing", "non-alcoholic", "low-calorie"],
-      "Herbal Chamomile Tea": ["soothing", "non-caffeinated", "herbal"]
-    };
-  
-    async function updateTags() {
-      const mealsCol = collection(db, "meals");
-  
-      for (const [name, tags] of Object.entries(tagMap)) {
-        const q = query(mealsCol, where("name", "==", name));
-        const querySnapshot = await getDocs(q);
-  
-        if (!querySnapshot.empty) {
-          querySnapshot.forEach(async (mealDoc) => {
-            const mealRef = doc(db, "meals", mealDoc.id);
-            await updateDoc(mealRef, { tags });
-            console.log(`✅ Updated tags for ${name}`);
-          });
-        } else {
-          console.log(`⚠️ Meal not found: ${name}`);
+  {
+    name: "Risotto ai Funghi",
+    restaurant: "Dolci Vita",
+    cuisine: "Italian",
+    contains: ["arborio rice", "mushrooms", "parmesan", "onion", "garlic"],
+    moods: ["tired", "focused"],
+    nutritionNote: "Rich in umami and B-vitamins from mushrooms to support brain function.",
+    image: "https://images.pexels.com/photos/31673751/pexels-photo-31673751/free-photo-of-delicious-homemade-pasta-with-grated-cheese.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2.com/risotto.jpg"
+  },
+  {
+    name: "Pasta Primavera",
+    restaurant: "Dolci Vita",
+    cuisine: "Italian",
+    contains: ["pasta", "bell peppers", "zucchini", "broccoli", "olive oil"],
+    moods: ["happy", "stressed"],
+    nutritionNote: "Packed with fiber and antioxidants to boost digestion and mood.",
+    image: "https://images.pexels.com/photos/31235404/pexels-photo-31235404/free-photo-of-seafood-pasta-with-shrimp-and-squid-on-rustic-plate.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2.com/primavera.jpg"
+  },
+  {
+    name: "Polenta with Grilled Vegetables",
+    restaurant: "Dolci Vita",
+    cuisine: "Italian",
+    contains: ["cornmeal", "zucchini", "eggplant", "tomatoes"],
+    moods: ["tired", "romantic"],
+    nutritionNote: "Low glycemic and nourishing, perfect for sustained energy.",
+    image: "https://example.com/polenta.jpg"
+  },
+  {
+    name: "Bruschetta Trio",
+    restaurant: "Dolci Vita",
+    cuisine: "Italian",
+    contains: ["tomatoes", "basil", "garlic", "mushrooms", "olive oil", "sourdough"],
+    moods: ["sad", "happy"],
+    nutritionNote: "Offers healthy fats and mood-boosting herbs like basil.",
+    image: "https://images.pexels.com/photos/2739250/pexels-photo-2739250.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2.com/bruschetta.jpg"
+  },
+  {
+    name: "Eggplant Parmigiana",
+    restaurant: "Dolci Vita",
+    cuisine: "Italian",
+    contains: ["eggplant", "mozzarella", "tomato sauce", "parmesan", "basil"],
+    moods: ["romantic", "stressed"],
+    nutritionNote: "Comforting, fiber-rich and supports heart health.",
+    image: "https://images.pexels.com/photos/1707917/pexels-photo-1707917.jpeg?auto=compress&cs=tinysrgb&w=1600"
+  },
+  {
+    name: "Acqua Frizzante with Lemon",
+    restaurant: "Dolci Vita",
+    cuisine: "Italian",
+    contains: ["sparkling water", "lemon"],
+    moods: ["focused", "sick"],
+    nutritionNote: "Refreshing and hydrating with a touch of vitamin C.",
+    image: "https://images.pexels.com/photos/2480828/pexels-photo-2480828.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+  },
+  {
+    name: "Herbal Chamomile Tea",
+    restaurant: "Dolci Vita",
+    cuisine: "Italian",
+    contains: ["chamomile", "mint"],
+    moods: ["sick", "stressed"],
+    nutritionNote: "Calms the nerves and promotes better sleep.",
+    image: "https://images.pexels.com/photos/30963545/pexels-photo-30963545/free-photo-of-chamomile-tea-cup-with-fresh-flowers.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+  }
+];
+
+
+
+
+    document.getElementById("addMealsBtn").addEventListener("click", async () => {
+      const status = document.getElementById("status");
+      status.textContent = "Adding science-based meals...";
+      try {
+        const mealRef = collection(db, "meals");
+        for (const meal of sampleMeals) {
+          await addDoc(mealRef, meal);
         }
+        status.textContent = "✅ Meals added with nutrition notes for science-based mood support!";
+      } catch (err) {
+        status.textContent = "Error: " + err.message;
       }
-    }
-  
-    updateTags();
+    });
   </script>
-  
 </body>
 </html>
