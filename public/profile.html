@@ -190,6 +190,7 @@
     const db = getFirestore(app);
     const storage = getStorage(app);
 
+      // Get references to UI elements
     const userName = document.getElementById("userName");
     const emailInfo = document.getElementById("emailInfo");
     const createdAt = document.getElementById("createdAt");
@@ -204,9 +205,11 @@
     const editForm = document.getElementById("editForm");
 
     let currentUserId = null;
-
+// Listen for authentication state changes
     onAuthStateChanged(auth, async (user) => {
       if (user) {
+        // User is signed in
+
         currentUserId = user.uid;
         emailInfo.textContent = user.email;
 
@@ -214,6 +217,8 @@
         const userSnap = await getDoc(userRef);
 
         if (userSnap.exists()) {
+
+        // Populate profile info
           const data = userSnap.data();
           userName.textContent = data.displayName || user.email;
           displayNameInput.value = data.displayName || "";
@@ -232,7 +237,7 @@
         window.location.href = "login.html";
       }
     });
-
+// Handle form submission to update display name and goals
     editForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       if (!currentUserId) return;
@@ -248,7 +253,7 @@
     upload.addEventListener("change", async (e) => {
       const file = e.target.files[0];
       if (!file || !currentUserId) return;
-
+// Upload the new avatar image to Firebase Storage
       const storageRef = ref(storage, `avatars/${currentUserId}`);
       await uploadBytes(storageRef, file);
       const url = await getDownloadURL(storageRef);

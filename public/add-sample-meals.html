@@ -134,7 +134,7 @@
         for (const meal of sampleMeals) {
           await addDoc(mealRef, meal);
         }
-        status.textContent = "✅ Meals added with nutrition notes for science-based mood support!";
+        status.textContent = "Meals added with nutrition notes for science-based mood support!";
       } catch (err) {
         status.textContent = "Error: " + err.message;
       }

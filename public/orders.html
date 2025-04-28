@@ -109,19 +109,23 @@
     const auth = getAuth(app);
     const ordersContainer = document.getElementById("ordersContainer");
 
+    // Monitor authentication state
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
+        // If no user is logged in, redirect to login page
         window.location.href = "login.html";
         return;
       }
 
       try {
+        // Query the "orders" collection for orders made by the current user
         const q = query(collection(db, "orders"), where("userId", "==", user.uid));
         const snapshot = await getDocs(q);
-
+        // If no orders found, show a friendly message
         if (snapshot.empty) {
           ordersContainer.innerHTML = "<p style='text-align:center;'>You haven’t made any orders yet. Go grab a mood-boosting bite!</p>";
         } else {
+        // Otherwise, display each order as a card
           snapshot.forEach(doc => {
             const order = doc.data();
             ordersContainer.innerHTML += `
@@ -138,6 +142,7 @@
           });
         }
       } catch (err) {
+        // If there is an error loading orders, show an error message
         ordersContainer.innerHTML = `<p style='color:red;text-align:center;'>Error loading orders: ${err.message}</p>`;
       }
     });

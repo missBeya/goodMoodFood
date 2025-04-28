@@ -61,7 +61,7 @@ const signupUser = (req, res) => {
   
       const user = results[0];
   
-      // Compare the provided password with the stored hash
+  
       const isPasswordValid = await bcrypt.compare(password, user.password);
       if (!isPasswordValid) {
         return res.status(400).send('Email or password is incorrect');

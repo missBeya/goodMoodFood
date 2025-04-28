@@ -171,19 +171,23 @@
   </footer>
 
   <script type="module">
+    // Import the Firebase app instance
     import app from './firebase-config.js';
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
+    // Initialize Firebase Authentication
     const auth = getAuth(app);
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
+        // If the user is already logged in, redirect to the dashboard
         window.location.href = 'dashboard.html';
       }
     });
   </script>
 
   <script>
+    // Select all slideshow images
     const slides = document.querySelectorAll('.background-slideshow img');
     let currentSlide = 0;
 

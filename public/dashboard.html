@@ -456,6 +456,7 @@
     const closeModal = document.getElementById("closeModal");
     const proceedToOrder = document.getElementById("proceedToOrder");
   
+    
     const moodToIngredients = {
       sad: ["salmon", "chia seeds", "flaxseed"],
       tired: ["eggs", "beans", "spinach"],
@@ -466,6 +467,7 @@
       happy: ["banana", "pineapple", "whole grains"]
     };
   
+    // nutrition notes to help customers to be aware of what they eat 
     const moodToReason = {
       happy: "Because you're happy, we think a sweet dessert will keep the vibes high!",
       sad: "Comfort food can help lift your spirits – this dish gives warm, cozy energy.",
@@ -515,7 +517,7 @@
     return;
   }
 
-  // === 🔍 Firestore SEARCH ===
+  // ===  Firestore SEARCH ===
   const mealSnap = await getDocs(collection(db, "meals"));
   const matchedLocal = [];
 
@@ -536,7 +538,7 @@
     localContainer.innerHTML = `<p>No meals found in our local database.</p>`;
   }
 
-  // === 🍽 TheMealDB SEARCH ===
+  // === TheMealDB SEARCH ===
   const res = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${query}`);
   const data = await res.json();
   const meals = data.meals?.slice(0, 6) || [];
@@ -581,7 +583,7 @@ proceedToOrder.addEventListener("click", () => {
     basket.push(newMeal);
     localStorage.setItem("basket", JSON.stringify(basket));
     showToast(`${newMeal.name} added to your basket!`);
-    updateCartCount(); // 💡 update the cart badge!
+    updateCartCount(); //  update the cart badge!
   } else {
     showToast(`${newMeal.name} is already in your basket.`);
   }
@@ -604,9 +606,10 @@ function showToast(message) {
 }
 
 
-
+// When th user clicks on the "Find Food button"
     findFoodBtn.addEventListener("click", async () => {
       const mood = moodSelect.value;
+      // Find ingredients linked to the selected mood
       const ingredients = moodToIngredients[mood.toLowerCase()] || [];
   
       localContainer.innerHTML = "<p>Loading local suggestions...</p>";
@@ -614,16 +617,20 @@ function showToast(message) {
   
       const user = auth.currentUser;
       const userDoc = await getDoc(doc(db, "users", user.uid));
+      // Get the user's preferences (allergies and intolerances)
       const prefs = userDoc.exists() ? userDoc.data().preferences || {} : {};
       const allergies = prefs.allergies || [];
       const intolerance = prefs.intolerance || [];
-  
+
+  // Fetch all meals from the local database
+
       const mealSnap = await getDocs(collection(db, "meals"));
 const matchedMeals = [];
 
 mealSnap.forEach((doc) => {
   const meal = doc.data();
   const contains = meal.contains || [];
+  // Check if the meal is safe for the user (no allergy or intolerance conflicts)
   const isSafe = !contains.some(i => allergies.includes(i) || intolerance.includes(i));
 
   const mealMoods = meal.moods || [];

@@ -188,7 +188,7 @@
 
         await sendEmailVerification(user);
         message.style.color = "green";
-        message.textContent = "✅ Verification email sent. Check your inbox!";
+        message.textContent = "Verification email sent. Check your inbox!";
 
         await setDoc(doc(db, "users", user.uid), {
           email: email,
